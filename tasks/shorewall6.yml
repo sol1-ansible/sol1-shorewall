@@ -9,14 +9,23 @@
   package:
     name: "{{ item }}"    
     state: "{{ shorewall6_package_state }}"
-  with_items: shorewall6_packages    
+  with_items: "{{ shorewall6_packages }}"
   notify: 
     - enable shorewall6
   tags:
     - packages
 
 - block:
-  - name: Shorewall6 configuration files
+  - name: Obtain Shorewall6 version
+    command: shorewall6 version
+    register: shorewall6_version_result
+    changed_when: False
+
+  - name: Convert Shorewall6 version var
+    set_fact:
+      shorewall6_version: "{{ '.'.join( shorewall6_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
+
+  - name: Generate Shorewall6 configuration files
     template:
       dest: "/etc/shorewall6/{{ item }}"
       src: "shorewall6/{{ item }}.j2"
@@ -32,6 +41,7 @@
       - policy
       - rules
       - hosts
+      - tunnels
     notify:
       - restart shorewall6
     tags:
@@ -55,3 +65,4 @@
     tags:
       - configuration
   when: (shorewall6_package_state != "absent")
+  
