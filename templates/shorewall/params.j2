@@ -26,7 +26,28 @@
 ###############################################################################
 
 {% for param in shorewall_params %}
-{{ param.name }}={{ param.value | join(',') }}
+{% if param.import is defined %}
+. {{ param.import }}{% endif %}
 {% endfor %}
+
+
+{% for param in shorewall_params %}
+{% if param.name is defined %}
+{{ param.name }}="{{ param.value }}" 
+{% endif %}
+{% endfor %}
+
+{% if dhcp_hosts is defined %}
+# DHCP Params
+{% for param in dhcp_hosts %}
+{% if param.name is defined %}
+{% if param.mac_address is defined %}
+{{ param.name | replace('-','_') }}="~{{ param.mac_address }}"
+{% elif param.fixed_address is defined %}
+{{ param.name | replace('-','_') }}="{{ param.fixed_address }}"
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
 
 #LAST LINE -- DO NOT REMOVE

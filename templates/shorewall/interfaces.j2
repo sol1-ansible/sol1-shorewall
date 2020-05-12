@@ -11,6 +11,6 @@
 ###############################################################################
 #ZONE   INTERFACE   OPTIONS
 
-{% for i in shorewall_interfaces %}
-{{ i.zone }} {{ i.interface }} {{ i.options | default("-") }}
+{% for item in shorewall_interfaces %}
+{{ item.zone }} {{ item.interface }} {{ item.options | default("-") }}
 {% endfor %}

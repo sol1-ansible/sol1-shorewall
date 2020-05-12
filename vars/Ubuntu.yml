@@ -1,0 +1,8 @@
+shorewall_packages:
+  - "shorewall"
+
+shorewall6_packages:
+  - "shorewall6"
+
+shorewall_service_name: "shorewall"
+shorewall6_service_name: "shorewall6"

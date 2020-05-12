@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+# Shorewall version 4 - Actions File
+#
+#ZONE   INTERFACE   OPTIONS
+
+{% for action in shorewall_actions %}
+{{ action.name }} {{ action.options | default(" ") }} {{ action.description | default("#nondescript") }}
+{% endfor %}

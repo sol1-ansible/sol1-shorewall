@@ -35,11 +35,11 @@ shorewall_conf | *this variable uses standard option / value pairs*
 shorewall_interfaces | `zone`, `interface`, `options`
 shorewall_zones | `zone`, `type`, `options`, `options_in`, `options_out`
 shorewall_policies | `source`, `dest`, `policy`, `log_level`, `burst_limit`, `conn_limit`
-shorewall_rules | **sections**: `section`, **rules**: `rule`.  For each **rule**: `action`, `source`, `dest`, `proto`, `dest_port`, `source_port`, `original_dest`, `rate_limit`, `user_group`, `mark`, `connlimit`, `time`, `headers`, `switch`, `helper`, `when`
+shorewall_rules | **sections**: `section`, **rules**: `rule`.  For each **rule**: `comment`, `action`, `source`, `dest`, `proto`, `dest_port`, `source_port`, `original_dest`, `rate_limit`, `user_group`, `mark`, `connlimit`, `time`, `headers`, `switch`, `helper`, `when`
 shorewall_masq | `interface`, `source`, `address`, `proto`, `ports`, `ipsec`, `mark`, `user`, `switch`, `original_dest`
 shorewall_tunnels | `type`, `zone`, `gateway`, `gateway_zone`
 shorewall_hosts | `zone`, `hosts`, `options`
-shorewall_params | `name`, `value`
+shorewall_params | [ `import` | `name`, `value` ] **imports are processed first then name/value pairs**
 
 
 ### shorewall_package_state - Shorewall package state
@@ -169,6 +169,13 @@ Define multiple zones accessed through a single interface in the `/etc/shorewall
 ### shorewall_params - Parameters
 
 Assign any shell variables that you need in the `/etc/shorewall/params` file. See the Shorewall [params man page](http://shorewall.org/manpages/shorewall-params.html) for more details.
+
+#### Example
+```yaml
+shorewall_params:
+  - { import: '/path/file' }
+  - { name: 'server', value: '10.0.0.1' }
+```
  
 ## Example Playbook
 

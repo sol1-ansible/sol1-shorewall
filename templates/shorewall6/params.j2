@@ -29,4 +29,17 @@
 {{ param.name }}={{ param.value | join(',') }}
 {% endfor %}
 
+{% if dhcp_hosts is defined %}
+# DHCP Params
+{% for param in dhcp_hosts %}
+{% if param.name is defined %}
+{% if param.mac_address is defined %}
+{{ param.name }}="~{{ param.mac_address }}"~
+{% elif param.fixed_address is defined %}
+{{ param.name }}="{{ param.fixed_address }}"~
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
 #LAST LINE -- DO NOT REMOVE

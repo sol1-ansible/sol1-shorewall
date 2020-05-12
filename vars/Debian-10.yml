@@ -1,0 +1,18 @@
+---
+# Debian vars file for Myatu.shorewall
+
+shorewall_incompatible_packages: 
+  - "iptables-service"
+
+shorewall_packages:
+  - "shorewall"
+  - "ipset"
+
+shorewall6_packages:
+  - "shorewall6"
+
+shorewall_service_name: "shorewall"
+shorewall6_service_name: "shorewall6"
+
+shorewall_default_actions_macros: "v5_debian10"
+

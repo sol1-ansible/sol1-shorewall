@@ -14,7 +14,11 @@
 {{ '' if (shorewall_version|float < 4.6) else '?' }}SECTION {{ section.section }}
 {% for rule in section.rules %}
 {% if rule.get('when', True) %}
-{{ rule.action | default('-') }} {{ rule.source | default('-') }} {{ rule.dest | default('-') }} {{ rule.proto | default('-') }} {{ rule.dest_port | default('-') }} {{ rule.source_port | default('-') }} {{ rule.original_dest | default('-') }} {{ rule.rate_limit | default('-') }} {{ rule.user_group | default('-') }} {{ rule.mark | default('-') }} {{ rule.connlimit | default('-') }} {{ rule.time | default('-') }} {{ rule.headers | default('-') }} {{ rule.switch | default('-') }} {{ rule.helper | default('-') }}
+{% if rule.comment is defined %} 
+
+# {{ rule.comment }} {% endif %}
+{% if rule.action is defined %} 
+{{ rule.action | default('-') }} {{ rule.source | default('-') }} {{ rule.dest | default('-') }} {{ rule.proto | default('-') }} {{ rule.dest_port | default('-') }} {{ rule.source_port | default('-') }} {{ rule.original_dest | default('-') }} {{ rule.rate_limit | default('-') }} {{ rule.user_group | default('-') }} {{ rule.mark | default('-') }} {{ rule.connlimit | default('-') }} {{ rule.time | default('-') }} {{ rule.headers | default('-') }} {{ rule.switch | default('-') }} {{ rule.helper | default('-') }} {% endif %}
 {% endif %}
 {% endfor %}
 

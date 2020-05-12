@@ -25,6 +25,10 @@
     set_fact:
       shorewall_version: "{{ '.'.join( shorewall_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
 
+  - name: debug config
+    debug:
+      msg: "{{ shorewall_rules }}"
+
   - name: Generate Shorewall configuration files
     template:
       dest: "/etc/shorewall/{{ item }}"
@@ -36,16 +40,52 @@
       - shorewall.conf
       - params
       - interfaces
-      - masq
       - zones
       - policy
       - rules
       - hosts
+#      - providers
       - tunnels
+#      - actions
+      - stoppedrules
     notify:
       - restart shorewall
     tags:
       - configuration
+
+  - name: debug shorewall_version
+    debug:
+      var: shorewall_version
+
+  - name: Generate Shorewall masq file
+    template:
+      dest: "/etc/shorewall/{{ item }}"
+      src: "shorewall/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - masq
+    notify:
+      - restart shorewall
+    tags:
+      - configuration
+    when: (shorewall_version|float < 5.0)
+
+  - name: Generate Shorewall masq file
+    template:
+      dest: "/etc/shorewall/{{ item }}"
+      src: "shorewall/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - snat
+    notify:
+      - restart shorewall
+    tags:
+      - configuration
+    when: (shorewall_version|float >= 5.0)
 
   - name: Verify Shorewall configuration
     command: shorewall check

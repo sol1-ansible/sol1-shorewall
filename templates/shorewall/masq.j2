@@ -6,5 +6,5 @@
 #											GROUP		DEST
 
 {% for rule in shorewall_masq %}
-{{ rule.interface | default('-') }} {{ rule.source | default('-') }} {{ rule.address | default('-') }} {{ rule.proto | default('-') }} {{ rule.ports | default('-') }} {{ rule.ipsec | default('-') }} {{ rule.mark | default('-') }} {{ rule.user | default('-') }} {{ rule.switch | default('-') }} {{ rule.original_dest | default('-') }}
+{{ rule.interface | default('') }} {{ rule.source | default('') }} {{ rule.address | default('') }} {{ rule.proto | default('') }} {{ rule.ports | default('') }} {{ rule.ipsec | default('') }} {{ rule.mark | default('') }} {{ rule.user | default('') }} {{ rule.switch | default('') }} {{ rule.original_dest | default('') }}
 {% endfor %}

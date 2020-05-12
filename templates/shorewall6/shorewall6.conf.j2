@@ -12,3 +12,13 @@
 {% for key,value in shorewall6_conf.items() %}
 {{ key|upper }}={{ value }}
 {% endfor %}
+{% if shorewall_default_actions_macros == 'v5_debian10' %}
+# For https://github.com/mrlesmithjr/ansible-shorewall/issues/15
+ACCEPT_DEFAULT="none"
+BLACKLIST_DEFAULT="dropBcasts,dropNotSyn,dropInvalid"
+DROP_DEFAULT="Broadcast(DROP),Multicast(DROP)"
+NFQUEUE_DEFAULT="none"
+QUEUE_DEFAULT="none"
+REJECT_DEFAULT="Broadcast(DROP),Multicast(DROP)"
+{% endif %}
+

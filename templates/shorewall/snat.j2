@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+
+#
+# Shorewall - SNAT/Masquerade File
+#
+# For information about entries in this file, type "man shorewall-snat"
+#
+# See http://shorewall.net/manpages/shorewall-snat.html for additional information
+###################################################################################################################
+#ACTION         SOURCE          DEST            PROTO   PORT   IPSEC  MARK   USER    SWITCH  ORIGDEST   PROBABILITY
+
+
+{% for rule in shorewall_masq %}
+MASQUERADE	{{ rule.source | default('-') }} {{ rule.interface | default('-') }}  {{ rule.proto | default('-') }} {{ rule.ports | default('-') }} {{ rule.ipsec | default('-') }} {{ rule.mark | default('-') }} {{ rule.user | default('-') }} {{ rule.switch | default('-') }} {{ rule.original_dest | default('-') }}
+{% endfor %}
+
+{% if shorewall_snat is defined %}
+{% for rule in shorewall_snat %}
+SNAT({{ rule.newsource | default('') }})  {{ rule.source | default('-') }} {{ rule.interface | default('-') }}  {{ rule.proto | default('-') }} {{ rule.ports | default('-') }} {{ rule.ipsec | default('-') }} {{ rule.mark | default('-') }} {{ rule.user | default('-') }} {{ rule.switch | default('-') }} {{ rule.original_dest | default('-') }}
+{% endfor %}
+{% endif %}

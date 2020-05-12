@@ -1,0 +1,6 @@
+shorewall_default_actions_macros: "v4_ubuntu16"
+
+shorewall_service_name: "shorewall"
+
+shorewall_packages:
+  - "shorewall"

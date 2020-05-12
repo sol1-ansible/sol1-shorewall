@@ -1,6 +1,12 @@
 ---
 # Defaults file for Myatu.shorewall
 
+# shorewall_run is a safeguard to prevent default values overwriting good values
+# in case host_vars aren't found (ie: somebody renamed the inventory and not the host_vars)
+shorewall_run: false
+
+shorewall_default_actions_macros: ""
+
 shorewall_conf: {}
 shorewall6_conf: {}
 
@@ -22,6 +28,10 @@ shorewall6_interfaces:
 
 shorewall_masq: []
 shorewall6_masq: []
+
+shorewall_stoppedrules: []
+shorewall6_stoppedrules: []
+
 
 shorewall_hosts: []
 shorewall6_hosts: []
@@ -72,8 +82,9 @@ shorewall_rules:
   - section: NEW
     rules:
     - { action: "Invalid(DROP)", source: net, dest: "$FW", proto: tcp }
+    - { comment: "ssh" }
     - { action: ACCEPT, source: net, dest: "$FW", proto: tcp, dest_port: "{{ ansible_ssh_port | default('ssh', True) }}" }
-    - { action: ACCEPT, source: net, dest: "$FW", proto: icmp, dest_port: echo-request }
+    - { comment: "ping", action: ACCEPT, source: net, dest: "$FW", proto: icmp, dest_port: echo-request }
 
 shorewall6_rules:
   - section: ALL
