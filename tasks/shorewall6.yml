@@ -64,5 +64,11 @@
       - restart shorewall6
     tags:
       - configuration
-  when: (shorewall6_package_state != "absent")
-  
+    when: (shorewall6_package_state != "absent")
+ 
+  - name: Enable Shorewall service in systemd
+    systemd:
+      name: shorewall
+      enabled: yes
+      masked: no
+ 

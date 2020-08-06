@@ -104,5 +104,11 @@
       - restart shorewall
     tags:
       - configuration
-  when: (shorewall_package_state != "absent")
-  
+    when: (shorewall_package_state != "absent")
+
+  - name: Enable Shorewall service in systemd
+    systemd:
+      name: shorewall
+      enabled: yes
+      masked: no
+ 

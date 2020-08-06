@@ -30,8 +30,11 @@
 . {{ param.import }}{% endif %}
 {% endfor %}
 
-
 {% for param in shorewall_params %}
+{% if param.comment is defined %}
+
+# {{ param.comment }} 
+{% endif %}
 {% if param.name is defined %}
 {{ param.name }}="{{ param.value }}" 
 {% endif %}
