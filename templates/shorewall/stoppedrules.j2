@@ -1,18 +1,16 @@
+# {{ ansible_managed }}
 #
-# Shorewall version 4.5 - Sample Stoppedrules File for two-interface configuration.
-# Copyright (C) 2012 by the Shorewall Team
+# Shorewall - stoppedrules File
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
-#
-# See the file README.txt for further details.
-#------------------------------------------------------------------------------
 # For information about entries in this file, type "man shorewall-stoppedrules"
+#
+# The manpage is also online at
+# https://shorewall.org/manpages/shorewall-stoppedrules.html
+#
 ###############################################################################
 #ACTION         SOURCE          DEST            PROTO   DEST            SOURCE
 #                                                       PORT(S)         PORT(S)
+
 {% for i in shorewall_stoppedrules %}
-{{ i.action }} {{ i.source | default("-") }} {{ i.dest | default("-") }} {{ i.proto | default('') }} {{ i.destports | default('')}} {{ i.sourceports | default('') }}
+{{ i.action }} {{ i.source | default("-") }} {{ i.dest | default("-") }} {{ i.proto | default('') }} {{ i.dest_port | default('')}} {{ i.source_port | default('') }}
 {% endfor %}
