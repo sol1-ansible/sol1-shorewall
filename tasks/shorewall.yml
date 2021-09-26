@@ -44,10 +44,14 @@
       - policy
       - rules
       - hosts
-#      - providers
+      - providers
       - tunnels
-#      - actions
+        #      - actions
       - stoppedrules
+      - rtrules
+      - mangle
+      - routes
+      - tcinterfaces
     notify:
       - restart shorewall
     tags:
@@ -72,7 +76,7 @@
       - configuration
     when: (shorewall_version|float < 5.0)
 
-  - name: Generate Shorewall masq file
+  - name: Generate Shorewall snat file
     template:
       dest: "/etc/shorewall/{{ item }}"
       src: "shorewall/{{ item }}.j2"

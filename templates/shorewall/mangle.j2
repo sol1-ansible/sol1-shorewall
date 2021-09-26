@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+#
+# Shorewall - Mangle File
+#
+# For information about entries in this file, type "man shorewall-mangle"
+#
+# See https://shorewall.org/manpages/shorewall-mangle.html for additional information
+############################################################################################
+#ACTION    SOURCE    DEST         PROTO   DPORT         SPORT   USER    TEST   length   tos   connbytes   helper   headers   probability   dscp   switch
+{% for mangle in shorewall_mangle %}
+{% if mangle.get('when', True) %}
+{% if mangle.comment is defined %} 
+
+# {{ mangle.comment }} {% endif %}
+{% if mangle.action is defined %} 
+{{ mangle.action }} {{ mangle.source | default('0.0.0.0/0') }} {{ mangle.dest | default('0.0.0.0/0') }} {{ mangle.proto | default('-') }} {{ mangle.dport | default('-') }} {{ mangle.sport | default('-') }} {{ mangle.user | default('-') }} {{ mangle.test | default('-') }} {% endif %}
+{% endif %}
+{% endfor %}
+

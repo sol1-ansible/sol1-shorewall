@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+#
+# Shorewall - rtrules File
+#
+# For information about entries in this file, type "man shorewall-rtrules"
+#
+# See https://shorewall.org/manpages/shorewall-rtrules.html for additional information
+############################################################################################
+#SOURCE    DEST    PROVIDER    PRIORITY    MASK
+{% for rtrules in shorewall_rtrules %}
+{% if rtrules.get('when', True) %}
+{% if rtrules.comment is defined %} 
+
+# {{ rtrules.comment }} {% endif %}
+{% if rtrules.provider is defined %} 
+{{ rtrules.source | default('-') }} {{ rtrules.dest | default('-') }} {{ rtrules.provider }} {{ rtrules.priority }} {{ rtrules.mask | default('-') }} {% endif %}
+{% endif %}
+{% endfor %}
+
