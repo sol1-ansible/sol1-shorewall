@@ -1,6 +1,8 @@
 # {{ ansible_managed }}
 #
-# Shorewall - params File
+# Shorewall - Params File
+#
+# /etc/shorewall/params
 #
 #	Assign any variables that you need here.
 #
@@ -22,11 +24,8 @@
 #
 #		net	eth0		130.252.100.255	routefilter,norfc1918
 #
-# For information about entries in this file, type "man shorewall-params"
-#
 # The manpage is also online at
 # https://shorewall.org/manpages/shorewall-params.html
-#
 ###############################################################################
 
 {% for param in shorewall_params %}
