@@ -26,39 +26,41 @@ shorewall6_interfaces:
     interface: "{{ ansible_default_ipv6.get('interface', 'eth0') }}"
     options: "tcpflags,nosmurfs,sourceroute=0"
 
-shorewall_masq: []
-shorewall6_masq: []
+#shorewall_masq: []
+#shorewall6_masq: []
 
-shorewall_stoppedrules: []
-shorewall6_stoppedrules: []
+#shorewall_params: []
+#shorewall6_params: []
 
+#shorewall_stoppedrules: []
+#shorewall6_stoppedrules: []
 
-shorewall_hosts: []
-shorewall6_hosts: []
+#shorewall_hosts: []
+#shorewall6_hosts: []
 
-shorewall_providers: []
-shorewall6_providers: []
+#shorewall_providers: []
+#shorewall6_providers: []
 
-shorewall_rtrules: []
-shorewall6_rtrules: []
+#shorewall_rtrules: []
+#shorewall6_rtrules: []
 
-shorewall_mangle: []
-shorewall6_mangle: []
+#shorewall_mangle: []
+#shorewall6_mangle: []
 
-shorewall_routes: []
-shorewall6_routes: []
+#shorewall_routes: []
+#shorewall6_routes: []
 
-shorewall_tcinterfaces: []
-shorewall6_tcinterfaces: []
+#shorewall_tcinterfaces: []
+#shorewall6_tcinterfaces: []
 
-shorewall_actions: []
-shorewall6_actions: []
+#shorewall_actions: []
+#shorewall6_actions: []
 
-shorewall_params: []
-shorewall6_params: []
+#shorewall_tunnels: []
+#shorewall6_tunnels: []
 
-shorewall_tunnels: []
-shorewall6_tunnels: []
+#shorewall_nat: []
+#shorewall6_nat: []
 
 shorewall_policies:
   - source: "$FW"
