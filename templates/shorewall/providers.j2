@@ -13,5 +13,5 @@
 #NAME   NUMBER  MARK    DUPLICATE       INTERFACE       GATEWAY         OPTIONS         COPY
 
 {% for provider in shorewall_providers %}
-{{  provider.name }} {{ provider.number }} {{ provider.mark }} {{ provider.duplicate | default('-') }} {{ provider.interface }} {{ provider.gateway }} {{ provider.options }} {{ provider.iface_copy | default('-') }}
+{{  provider.name }} {{ provider.number }} {{ provider.mark }} {{ provider.duplicate | default('-') }} {{ provider.interface }} {{ provider.gateway }} {{ provider.options }} {{ provider.copy_iface | default('-') }}
 {% endfor %}
