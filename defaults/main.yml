@@ -4,6 +4,7 @@
 # shorewall_run is a safeguard to prevent default values overwriting good values
 # in case host_vars aren't found (ie: somebody renamed the inventory and not the host_vars)
 shorewall_run: false
+shorewall6_run: false
 
 shorewall_default_actions_macros: ""
 
