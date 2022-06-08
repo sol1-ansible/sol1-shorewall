@@ -1,16 +1,16 @@
 # {{ ansible_managed }}
 #
-# Shorewall - routes File
+# Shorewall6 - routes File
 #
-# For information about entries in this file, type "man shorewall-routes"
+# For information about entries in this file, type "man shorewall6-routes"
 #
 # The manpage is also online at
-# https://shorewall.org/manpages/shorewall-routes.html
+# https://shorewall.org/manpages6/shorewall6-routes.html
 #
 ############################################################################################
 #PROVIDER     DEST             GATEWAY         DEVICE         OPTIONS
 
-{% for routes in shorewall_routes %}{% if routes.comment is defined %}# {{ routes.comment }} {% endif %} 
+{% for routes in shorewall6_routes %}{% if routes.comment is defined %}# {{ routes.comment }} {% endif %} 
 {{ routes.provider | default('main') }} {{ routes.dest }} {{ routes.gateway | default('-') }} {{ routes.device | default('-') }} {{ routes.options | default('-') }}
 {% endfor %}
 

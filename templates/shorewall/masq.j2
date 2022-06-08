@@ -9,6 +9,8 @@
 #INTERFACE:DEST		SOURCE		ADDRESS		PROTO	PORT(S)	IPSEC	MARK	USER/	SWITCH	ORIGINAL
 #											GROUP		DEST
 
-{% for rule in shorewall_masq %}
+{% for rule in shorewall_masq %}{% if rule.comment is defined %}# {{ rule.comment }} {% endif %} 
 {{ rule.interface | default('') }} {{ rule.source | default('') }} {{ rule.address | default('') }} {{ rule.proto | default('') }} {{ rule.ports | default('') }} {{ rule.ipsec | default('') }} {{ rule.mark | default('') }} {{ rule.user | default('') }} {{ rule.switch | default('') }} {{ rule.original_dest | default('') }}
 {% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

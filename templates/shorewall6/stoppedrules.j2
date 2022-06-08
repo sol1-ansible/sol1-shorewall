@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+#
+# Shorewall6 - stoppedrules File
+#
+# For information about entries in this file, type "man shorewall6-stoppedrules"
+#
+# The manpage is also online at
+# https://shorewall.org/manpages6/shorewall6-stoppedrules.html
+#
+###############################################################################
+#ACTION         SOURCE          DEST            PROTO   DEST            SOURCE
+#                                                       PORT(S)         PORT(S)
+
+{% for i in shorewall6_stoppedrules %}{% if i.comment is defined %}# {{ i.comment }} {% endif %} 
+{{ i.action }} {{ i.source | default("-") }} {{ i.dest | default("-") }} {{ i.proto | default('') }} {{ i.dest_port | default('')}} {{ i.source_port | default('') }}
+{% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

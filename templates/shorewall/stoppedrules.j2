@@ -11,6 +11,8 @@
 #ACTION         SOURCE          DEST            PROTO   DEST            SOURCE
 #                                                       PORT(S)         PORT(S)
 
-{% for i in shorewall_stoppedrules %}
-{{ i.action }} {{ i.source | default("-") }} {{ i.dest | default("-") }} {{ i.proto | default('') }} {{ i.dest_port | default('')}} {{ i.source_port | default('') }}
+{% for sr in shorewall_stoppedrules %}{% if sr.comment is defined %}# {{ sr.comment }} {% endif %} 
+{{ sr.action }} {{ sr.source | default("-") }} {{ sr.dest | default("-") }} {{ sr.proto | default('') }} {{ sr.dest_port | default('')}} {{ sr.source_port | default('') }}
 {% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

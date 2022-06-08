@@ -1,14 +1,17 @@
 # {{ ansible_managed }}
-# Shorewall version 4 - Hosts File
+#
+# Shorewall6 - hosts File
 # 
 # For information about this file, type "man shorewall6-hosts"
 #
 # The manpage is also online at
-# http://www.shorewall.net/manpages/shorewall6-hosts.html
+# https://shorewall.org/manpages6/shorewall6-hosts.html
 #
 ###############################################################################
-#ZONE   HOSTS        OPTIONS     
-#
-{% for i in shorewall6_hosts %}
+#ZONE   HOSTS        OPTIONS
+
+{% for i in shorewall6_hosts %}{% if i.comment is defined %}# {{ i.comment }} {% endif %} 
 {{ i.zone}} {{i.hosts}} {{ i.options | default('-') }}
 {% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

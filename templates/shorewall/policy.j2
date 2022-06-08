@@ -11,6 +11,8 @@
 #SOURCE DEST    POLICY      LOG     LIMIT:      CONNLIMIT:
 #                           LEVEL   BURST       MASK
 
-{% for i in shorewall_policies %}
+{% for i in shorewall_policies %}{% if i.comment is defined %}# {{ i.comment }} {% endif %} 
 {{ i.source }} {{ i.dest }} {{ i.policy }} {{ i.log_level | default('-') }} {{ i.burst_limit | default('-') }} {{ i.connlimit | default('-') }}
 {% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

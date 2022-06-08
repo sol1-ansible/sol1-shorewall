@@ -1,7 +1,10 @@
 ---
 # Shorewall tasks file for Myatu.shorewall
 
-- name: Gather Shorewall configuration variables
+- name: Gather base Shorewall configuration variables
+  include_vars: shorewall_conf.yml
+
+- name: Combine all Shorewall configuration variables
   set_fact:
     shorewall_conf: "{{ shorewall_conf_base|combine(shorewall_conf) }}"   
 
@@ -25,10 +28,6 @@
     set_fact:
       shorewall_version: "{{ '.'.join( shorewall_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
 
-  - name: debug config
-    debug:
-      msg: "{{ shorewall_rules }}"
-
   - name: Generate Shorewall essential configuration files
     template:
       dest: "/etc/shorewall/{{ item }}"
@@ -42,16 +41,6 @@
       - zones
       - policy
       - rules
-        #      - params
-        #      - hosts
-        #      - providers
-        #      - tunnels
-        #      - actions
-        #      - stoppedrules
-        #      - rtrules
-        #      - mangle
-        #      - routes
-        #      - tcinterfaces
     notify:
       - restart shorewall
     tags:
@@ -100,7 +89,7 @@
       - restart shorewall
     tags:
       - configuration
-    when: shorewall_tcinterfaces is defined
+    when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is not defined)
 
   - name: Generate Shorewall actions configuration file
     template:

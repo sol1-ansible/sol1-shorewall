@@ -1,16 +1,16 @@
 # {{ ansible_managed }}
 #
-# Shorewall - actions File
+# Shorewall6 - actions File
 #
-# For information about entries in this file, type "man shorewall-actions"
+# For information about entries in this file, type "man shorewall6-actions"
 #
 # The manpage is also online at
-# https://shorewall.org/manpages/shorewall-actions.html
+# https://shorewall.org/manpages6/shorewall6-actions.html
 #
 ###############################################################################
 #ZONE   INTERFACE   OPTIONS
 
-{% for action in shorewall_actions %}{% if action.comment is defined %}# {{ action.comment }} {% endif %} 
+{% for action in shorewall6_actions %}{% if action.comment is defined %}# {{ action.comment }} {% endif %} 
 {{ action.name }} {{ action.options | default(" ") }} {{ action.description | default("#nondescript") }}
 {% endfor %}
 

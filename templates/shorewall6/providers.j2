@@ -1,18 +1,18 @@
 # {{ ansible_managed }}
 #
-# Shorewall - providers File
+# Shorewall6 - providers File
 #
-# For information about entries in this file, type "man shorewall-providers"
+# For information about entries in this file, type "man shorewall6-providers"
 #
 # The manpage is also online at
-# https://shorewall.org/manpages/shorewall-providers.html
+# https://shorewall.org/manpages6/shorewall6-providers.html
 #
 # For additional information, see http://shorewall.org/MultiISP.html
 #
 ############################################################################################
 #NAME   NUMBER  MARK    DUPLICATE       INTERFACE       GATEWAY         OPTIONS         COPY
 
-{% for provider in shorewall_providers %}{% if provider.comment is defined %}# {{ provider.comment }} {% endif %} 
+{% for provider in shorewall6_providers %}{% if provider.comment is defined %}# {{ provider.comment }} {% endif %} 
 {{  provider.name }} {{ provider.number }} {{ provider.mark }} {{ provider.duplicate | default('-') }} {{ provider.interface }} {{ provider.gateway }} {{ provider.options }} {{ provider.copy_iface | default('-') }}
 {% endfor %}
 

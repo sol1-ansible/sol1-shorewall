@@ -10,6 +10,8 @@
 ###############################################################################
 #TYPE		    ZONE	GATEWAY(S)			GATEWAY ZONE(S)
 
-{% for i in shorewall_tunnels %}
+{% for i in shorewall_tunnels %}{% if i.comment is defined %}# {{ i.comment }} {% endif %} 
 {{ i.type }} {{ i.zone }} {{ i.gateway }} {{ i.gateway_zone | default('') }}
 {% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

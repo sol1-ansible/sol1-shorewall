@@ -1,16 +1,16 @@
 # {{ ansible_managed }}
 #
-# Shorewall - tcinterfaces File
+# Shorewall6 - tcinterfaces File
 #
-# For information on the settings in this file, type "man shorewall-tcinterfaces"
+# For information on the settings in this file, type "man shorewall6-tcinterfaces"
 #
 # The manpage is also online at
-# https://shorewall.org/manpages/shorewall-tcinterfaces.html
+# https://shorewall.org/manpages6/shorewall6-tcinterfaces.html
 #
 ###############################################################################
 #INTERFACE    TYPE      IN-BANDWIDTH  OUT-BANDWIDTH
 
-{% for tci in shorewall_tcinterfaces %}{% if tci.comment is defined %}# {{ tci.comment }} {% endif %} 
+{% for tci in shorewall6_tcinterfaces %}{% if tci.comment is defined %}# {{ tci.comment }} {% endif %} 
 {{ tci.interface }} {{ tci.type | default('-') }} {{ tci.in_bandwidth | default('-') }} {{ tci.out_bandwidth | default('-') }}
 {% endfor %}
 

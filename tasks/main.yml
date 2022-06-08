@@ -22,19 +22,28 @@
   with_items: "{{ shorewall_incompatible_packages|default([]) }}"
   when: (shorewall_package_state != "absent")
 
+- name: Shorewall duplicate TC Interfaces entries check
+  set_fact:
+    shorewall_duplicate_tcinterfaces: true
+  when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is defined)
+
 - include: shorewall.yml
-  when: shorewall_run
+  when: (shorewall_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)
 
 - include: shorewall6.yml
-  when: shorewall6_run
-  #when: "'scope' in ansible_default_ipv6 and ansible_default_ipv6.scope == 'global' and shorewall6_run"
+  when: (shorewall6_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)
 
 - name: Shorewall dead man's switch 
   debug:
     msg: "Skipped Shorewall configuration because dead man's switch var 'shorewall_run' is not set to true"
-  when: not shorewall_run
+  when: not shorewall_run|bool
 
 - name: Shorewall6 dead man's switch 
   debug:
     msg: "Skipped Shorewall6 configuration because dead man's switch var 'shorewall6_run' is not set to true"
-  when: not shorewall6_run
+  when: not shorewall6_run|bool
+
+- name: Abort if tcinterfaces vars exist for both Shorewall and Shorewall6
+  debug:
+    msg: "Aborted Shorewall configuration because tcinterfaces is defined in both Shorewall and Shorewall6 vars... you can only define this once"
+  when: shorewall_duplicate_tcinterfaces is defined

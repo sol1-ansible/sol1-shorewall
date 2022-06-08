@@ -1,24 +1,89 @@
-###############################################################################
-# {{ ansible_managed }}
-#
-#  Shorewall Version 4 -- /etc/shorewall6/shorewall6.conf
-#
-#  For information about the settings in this file, type "man shorewall6.conf"
-#
-#  Manpage also online at
-#  http://www.shorewall.net/manpages6/shorewall6.conf.html
-###############################################################################
+#################################################################################
+# {{ ansible_managed }}                                                         #
+#                                                                               #
+#  Shorewall6 - shorewall6.conf file                                            #
+#                                                                               #
+#  For information about the settings in this file, type "man shorewall6.conf"  #
+#                                                                               #
+#  Manpage also online at https://shorewall.org/manpages6/shorewall6.conf.html  #
+#                                                                               #
+#################################################################################
 
-{% for key,value in shorewall6_conf.items() %}
+###############################################################################
+#          S T A R T U P   E N A B L E D                                      #
+###############################################################################
+{% for key,value in shorewall6_conf.startup.items() %}
 {{ key|upper }}={{ value }}
 {% endfor %}
-{% if shorewall_default_actions_macros == 'v5_debian10' %}
-# For https://github.com/mrlesmithjr/ansible-shorewall/issues/15
-ACCEPT_DEFAULT="none"
-BLACKLIST_DEFAULT="dropBcasts,dropNotSyn,dropInvalid"
-DROP_DEFAULT="Broadcast(DROP),Multicast(DROP)"
-NFQUEUE_DEFAULT="none"
-QUEUE_DEFAULT="none"
-REJECT_DEFAULT="Broadcast(DROP),Multicast(DROP)"
-{% endif %}
 
+###############################################################################
+#          V E R B O S I T Y                                                  #
+###############################################################################
+{% for key,value in shorewall6_conf.verbosity.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#          P A G E R                                                          #
+###############################################################################
+{% for key,value in shorewall6_conf.pager.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#          F I R E W A L L                                                    #
+###############################################################################
+{% for key,value in shorewall6_conf.firewall.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#            L O G G I N G                                                    #
+###############################################################################
+{% for key,value in shorewall6_conf.logging.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#     L O C A T I O N  O F  F I L E S  A N D  D I R E C T O R I E S           #
+###############################################################################
+{% for key,value in shorewall6_conf.locations.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#   D E F A U L T   A C T I O N S / M A C R O S                               #
+###############################################################################
+{% for key,value in shorewall6_conf.actions_and_macros.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#      R S H / R C P  C O M M A N D S                                         #
+###############################################################################
+{% for key,value in shorewall6_conf.commands.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#     F I R E W A L L   O P T I O N S                                         #
+###############################################################################
+{% for key,value in shorewall6_conf.fw_options.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+###############################################################################
+#     P A C K E T   D I S P O S I T I O N                                     #
+###############################################################################
+{% for key,value in shorewall6_conf.packet_disposition.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+################################################################################
+#     P A C K E T  M A R K  L A Y O U T                                        #
+################################################################################
+{% for key,value in shorewall6_conf.packet_marks.items() %}
+{{ key|upper }}={{ value }}
+{% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

@@ -1,5 +1,6 @@
 # {{ ansible_managed }}
-# Shorewall version 4 - Params File
+#
+# Shorewall6 - Params File
 #
 # /etc/shorewall6/params
 #
@@ -23,10 +24,24 @@
 #
 #		net	eth0		130.252.100.255	routefilter,norfc1918
 #
+# The manpage is also online at
+# https://shorewall.org/manpages6/shorewall6-params.html
+#
 ###############################################################################
 
 {% for param in shorewall6_params %}
-{{ param.name }}={{ param.value | join(',') }}
+{% if param.import is defined %}
+. {{ param.import }}{% endif %}
+{% endfor %}
+
+{% for param in shorewall6_params %}
+{% if param.comment is defined %}
+
+# {{ param.comment }} 
+{% endif %}
+{% if param.name is defined %}
+{{ param.name }}="{{ param.value }}" 
+{% endif %}
 {% endfor %}
 
 {% if dhcp_hosts is defined %}
@@ -34,9 +49,9 @@
 {% for param in dhcp_hosts %}
 {% if param.name is defined %}
 {% if param.mac_address is defined %}
-{{ param.name }}="~{{ param.mac_address }}"~
+{{ param.name | replace('-','_') }}="~{{ param.mac_address }}"
 {% elif param.fixed_address is defined %}
-{{ param.name }}="{{ param.fixed_address }}"~
+{{ param.name | replace('-','_') }}="{{ param.fixed_address }}"
 {% endif %}
 {% endif %}
 {% endfor %}

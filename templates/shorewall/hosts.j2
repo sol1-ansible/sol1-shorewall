@@ -9,7 +9,9 @@
 #
 ###############################################################################
 #ZONE   HOSTS        OPTIONS     
-#
-{% for i in shorewall_hosts %}
+
+{% for i in shorewall_hosts %}{% if i.comment is defined %}# {{ i.comment }} {% endif %} 
 {{ i.zone}} {{i.hosts}} {{ i.options | default('-') }}
 {% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

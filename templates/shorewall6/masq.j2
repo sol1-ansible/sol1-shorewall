@@ -1,10 +1,16 @@
 # {{ ansible_managed }}
-
-# For information about entries in this file, type "man shorewall6-masq"
+#
+# Shorewall6 - masq File
+#
+# The manpage is online at
+# https://shorewall.org/manpages6/shorewall6-masq.html
+#
 ################################################################################################################
 #INTERFACE:DEST		SOURCE		ADDRESS		PROTO	PORT(S)	IPSEC	MARK	USER/	SWITCH	ORIGINAL
 #											GROUP		DEST
 
-{% for rule in shorewall6_masq %}
-{{ rule.interface | default('-') }} {{ rule.source | default('-') }} {{ rule.address | default('-') }} {{ rule.proto | default('-') }} {{ rule.ports | default('-') }} {{ rule.ipsec | default('-') }} {{ rule.mark | default('-') }} {{ rule.user | default('-') }} {{ rule.switch | default('-') }} {{ rule.original_dest | default('-') }}
+{% for rule in shorewall6_masq %}{% if rule.comment is defined %}# {{ rule.comment }} {% endif %} 
+{{ rule.interface | default('') }} {{ rule.source | default('') }} {{ rule.address | default('') }} {{ rule.proto | default('') }} {{ rule.ports | default('') }} {{ rule.ipsec | default('') }} {{ rule.mark | default('') }} {{ rule.user | default('') }} {{ rule.switch | default('') }} {{ rule.original_dest | default('') }}
 {% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

@@ -1,13 +1,16 @@
 ---
-# Shorewall6 tasks file for Myatu.shorewall
+# Shorewall6 tasks file for Myatu.shorewall6
 
-- name: Gather Shorewall6 configuration variables
+- name: Gather base Shorewall6 configuration variables
+  include_vars: shorewall6_conf.yml
+
+- name: Combine all Shorewall6 configuration variables
   set_fact:
-    shorewall6_conf: "{{ shorewall6_conf_base|combine(shorewall6_conf) }}"
+    shorewall6_conf: "{{ shorewall6_conf|combine(shorewall6_conf_base, recursive=True) }}"
 
 - name: Install Shorewall6 and dependencies
   package:
-    name: "{{ item }}"    
+    name: "{{ item }}"
     state: "{{ shorewall6_package_state }}"
   with_items: "{{ shorewall6_packages }}"
   notify: 
@@ -25,7 +28,7 @@
     set_fact:
       shorewall6_version: "{{ '.'.join( shorewall6_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
 
-  - name: Generate Shorewall6 configuration files
+  - name: Generate Shorewall6 essential configuration files
     template:
       dest: "/etc/shorewall6/{{ item }}"
       src: "shorewall6/{{ item }}.j2"
@@ -34,18 +37,213 @@
       mode: 0640
     with_items:
       - shorewall6.conf
-      - params
       - interfaces
-      - masq
       - zones
       - policy
       - rules
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+
+  - name: Generate Shorewall6 params configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - params
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_params is defined
+
+  - name: Generate Shorewall6 routes configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - routes
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_routes is defined
+
+  - name: Generate Shorewall6 tcinterfaces configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - tcinterfaces
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: (shorewall6_tcinterfaces is defined) and (shorewall_tcinterfaces is not defined)
+
+  - name: Generate Shorewall6 actions configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - actions
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_actions is defined
+
+  - name: Generate Shorewall6 hosts configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
       - hosts
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_hosts is defined
+
+  - name: Generate Shorewall6 providers configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - providers
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_providers is defined
+
+  - name: Generate Shorewall6 rtrules configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - rtrules
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_rtrules is defined
+
+  - name: Generate Shorewall6 mangle configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - mangle
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_mangle is defined
+
+  - name: Generate Shorewall6 tunnels configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
       - tunnels
     notify:
       - restart shorewall6
     tags:
       - configuration
+    when: shorewall6_tunnels is defined
+
+  - name: Generate Shorewall6 stoppedrules configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - stoppedrules
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_stoppedrules is defined
+
+  - name: Generate Shorewall6 nat configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - nat
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_nat is defined
+
+  - name: debug shorewall6_version
+    debug:
+      var: shorewall6_version
+
+  - name: Generate Shorewall6 masq file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - masq
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: (shorewall6_version|float < 5.0) and (shorewall6_masq is defined)
+
+  - name: Generate Shorewall6 snat file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - snat
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: (shorewall6_version|float >= 5.0) and (shorewall6_masq is defined or shorewall6_snat is defined)
 
   - name: Verify Shorewall6 configuration
     command: shorewall6 check
@@ -66,9 +264,9 @@
       - configuration
     when: (shorewall6_package_state != "absent")
  
-  - name: Enable Shorewall service in systemd
+  - name: Enable Shorewall6 service in systemd
     systemd:
-      name: shorewall
+      name: shorewall6
       enabled: yes
       masked: no
  

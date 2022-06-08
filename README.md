@@ -187,6 +187,13 @@ shorewall_params:
 
 ## Changelog
 
+### v2.0
+- Massive rewrite and cleanup of Templates, and Vars files and Tasks for both Shorewall and Shorewall6
+- Add templates for missing Shorewall(6) config files eg tcinterfaces rtrules
+- Fix up broken Shorewall6 tasks
+- Add working dead mans switch for both Shorewall and Shorewall6
+- Shorewall(6) Templates now generate templates like the factory Shorewall templates instead of wall of text
+
 ### v1.0.3
 
 - Added: The `shorewall_rules` has an added option `when` for each rule, which acts similar to Ansible's `when` statement and allows rules to be conditional.
