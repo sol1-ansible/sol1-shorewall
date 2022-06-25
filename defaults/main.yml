@@ -99,3 +99,363 @@ shorewall6_zones:
     type: firewall
   - zone: net
     type: ipv6
+
+
+
+# Shorewall base vars for Myatu.shorewall
+shorewall_conf_defaults: 
+  ###############################################################################
+  #                      S T A R T U P   E N A B L E D
+  ###############################################################################
+  startup:
+    startup_enabled: "Yes"
+
+  ###############################################################################
+  #          V E R B O S I T Y
+  ###############################################################################
+  verbosity:
+    verbosity: "1"
+
+  ###############################################################################
+  #          P A G E R
+  ###############################################################################
+  pager:
+    pager: ""
+
+  ###############################################################################
+  #          F I R E W A L L
+  ###############################################################################
+  firewall:
+    firewall: ""
+
+  ###############################################################################
+  #            L O G G I N G
+  ###############################################################################
+  logging:
+    log_level: "info"
+    blacklist_log_level: ""
+    invalid_log_level: ""
+    log_backend: ""
+    log_martians: "Yes"
+    log_verbosity: "2"
+    log_zone: "Both"
+    logallnew: ""
+    logfile: "/var/log/messages"
+    logformat: "\"Shorewall:%s:%s:\""
+    logtagonly: "No"
+    loglimit: ""
+    maclist_log_level: "$LOG_LEVEL"
+    related_log_level: ""
+    rpfilter_log_level: "$LOG_LEVEL"
+    sfilter_log_level: "$LOG_LEVEL"
+    smurf_log_level: "$LOG_LEVEL"
+    startup_log: "/var/log/shorewall-init.log"
+    tcp_flags_log_level: "$LOG_LEVEL"
+    untracked_log_level: ""
+
+  ###############################################################################
+  # L O C A T I O N   O F F I L E S   A N D   D I R E C T O R I E S
+  ###############################################################################
+  locations:
+    arptables: ""
+    config_path: "\"${CONFDIR}/shorewall:${SHAREDIR}/shorewall\""
+    geoipdir: "/usr/share/xt_geoip/LE"
+    iptables: ""
+    ip: ""
+    ipset: ""
+    lockfile: ""
+    modulesdir: ""
+    nfacct: ""
+    path: "\"/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin\""
+    perl: "/usr/bin/perl"
+    restorefile: "restore"
+    shorewall_shell: "/bin/sh"
+    subsyslock: ""
+    tc: ""
+
+  ###############################################################################
+  #   D E F A U L T   A C T I O N S / M A C R O S
+  ###############################################################################
+  actions_and_macros:
+    accept_default: "\"None\""
+    blacklist_default: "\"Broadcast(DROP),Multicast(DROP),dropNotSyn:$LOG_LEVEL,dropInvalid:$LOG_LEVEL,DropDNSrep:$LOG_LEVEL\""
+    drop_default: "\"Broadcast(DROP),Multicast(DROP)\""
+    nfqueue_default: "\"None\""
+    queue_default: "\"None\""
+    reject_default: "\"Broadcast(DROP),Multicast(DROP)\""
+
+  ###############################################################################
+  #      R S H / R C P  C O M M A N D S
+  ###############################################################################
+  commands:
+    rcp_command: "'scp ${files} ${root}@${system}:${destination}'"
+    rsh_command: "'ssh ${root}@${system} ${command}'"
+
+  ###############################################################################
+  #     F I R E W A L L   O P T I O N S
+  ###############################################################################
+  fw_options:
+    accounting: "Yes"
+    accounting_table: "filter"
+    add_ip_aliases: "No"
+    add_snat_aliases: "No"
+    adminisabsentminded: "Yes"
+    autocomment: "Yes"
+    autohelpers: "Yes"
+    automake: "No"
+    balance_providers: ""
+    basic_filters: "No"
+    blacklist: "\"NEW,INVALID,UNTRACKED\""
+    clampmss: "No"
+    clear_tc: "Yes"
+    complete: "No"
+    defer_dns_resolution: "Yes"
+    delete_then_add: "Yes"
+    detect_dnat_ipaddrs: "No"
+    disable_ipv6: "No"
+    docker: "No"
+    dont_load: ""
+    dynamic_blacklist: "Yes"
+    expand_policies: "Yes"
+    exportmodules: "Yes"
+    fastaccept: "No"
+    forward_clear_mark: ""
+    helpers: ""
+    ignoreunknownvariables: "No"
+    implicit_continue: "No"
+    ipset_warnings: "Yes"
+    ip_forwarding: "On"
+    keep_rt_tables: "No"
+    maclist_table: "filter"
+    maclist_ttl: ""
+    mangle_enabled: "Yes"
+    mark_in_forward_chain: "No"
+    miniupnpd: "No"
+    multicast: "No"
+    mutex_timeout: "60"
+    null_route_rfc1918: "No"
+    optimize: "All"
+    optimize_accounting: "No"
+    perl_hash_seed: "0"
+    reject_action: ""
+    rename_combined: "Yes"
+    require_interface: "No"
+    restart: "restart"
+    restore_default_route: "Yes"
+    restore_routemarks: "Yes"
+    retain_aliases: "No"
+    route_filter: "Yes"
+    save_arptables: "No"
+    save_ipsets: "No"
+    tc_enabled: "No"
+    tc_expert: "No"
+    tc_priomap: "\"2 3 3 3 2 3 1 1 2 2 2 2 2 2 2 2\""
+    track_providers: "Yes"
+    track_rules: "No"
+    use_default_rt: "Yes"
+    use_nflog_size: "No"
+    use_physical_names: "No"
+    use_rt_names: "No"
+    verbose_messages: "Yes"
+    warnoldcapversion: "Yes"
+    workarounds: "No"
+    zero_marks: "No"
+    zone2zone: "-"
+
+  ###############################################################################
+  #     P A C K E T   D I S P O S I T I O N
+  ###############################################################################
+  packet_disposition:
+    blacklist_disposition: "DROP"
+    invalid_disposition: "CONTINUE"
+    maclist_disposition: "REJECT"
+    related_disposition: "ACCEPT"
+    rpfilter_disposition: "DROP"
+    smurf_disposition: "DROP"
+    sfilter_disposition: "DROP"
+    tcp_flags_disposition: "DROP"
+    untracked_disposition: "CONTINUE"
+
+  ################################################################################
+  #     P A C K E T  M A R K  L A Y O U T
+  ################################################################################
+  packet_marks:
+    tc_bits: ""
+    provider_bits: ""
+    provider_offset: ""
+    mask_bits: ""
+    zone_bits: "0"
+
+
+# Shorewall6 base vars for Myatu.shorewall
+shorewall6_conf_defaults:
+
+  ###############################################################################
+  #          S T A R T U P   E N A B L E D
+  ###############################################################################
+  startup:
+    startup_enabled: "Yes"
+
+  ###############################################################################
+  #          V E R B O S I T Y
+  ###############################################################################
+  verbosity:
+    verbosity: "1"
+
+  ###############################################################################
+  #          P A G E R
+  ###############################################################################
+  pager:
+    pager: ""
+
+  ###############################################################################
+  #          F I R E W A L L
+  ###############################################################################
+  firewall:
+    firewall: ""
+
+  ###############################################################################
+  #            L O G G I N G
+  ###############################################################################
+  logging:
+    log_level: "info"
+    blacklist_log_level: ""
+    invalid_log_level: ""
+    log_backend: ""
+    log_verbosity: "2"
+    log_zone: "Both"
+    logallnew: ""
+    logfile: "/var/log/messages"
+    logformat: "\"Shorewall:%s:%s:\""
+    loglimit: ""
+    logtagonly: "No"
+    maclist_log_level: "$LOG_LEVEL"
+    related_log_level: ""
+    rpfilter_log_level: "$LOG_LEVEL"
+    sfilter_log_level: "$LOG_LEVEL"
+    smurf_log_level: "$LOG_LEVEL"
+    startup_log: "/var/log/shorewall6-init.log"
+    tcp_flags_log_level: "$LOG_LEVEL"
+    untracked_log_level: ""
+
+  ###############################################################################
+  # L O C A T I O N   O F F I L E S   A N D   D I R E C T O R I E S
+  ###############################################################################
+  locations:
+    config_path: "\"${CONFDIR}/shorewall6:/usr/share/shorewall6:${SHAREDIR}/shorewall\""
+    geoipdir: "/usr/share/xt_geoip/LE"
+    ip6tables: ""
+    ip: ""
+    ipset: ""
+    lockfile: ""
+    modulesdir: ""
+    nfacct: ""
+    perl: "/usr/bin/perl"
+    path: "\"/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin\""
+    restorefile: "restore"
+    shorewall_shell: "/bin/sh"
+    subsyslock: ""
+    tc: ""
+
+  ###############################################################################
+  #   D E F A U L T   A C T I O N S / M A C R O S
+  ###############################################################################
+  actions_and_macros:
+    accept_default: "\"None\""
+    blacklist_default: "\"AllowICMPs,Broadcast(DROP),Multicast(DROP),dropNotSyn:$LOG_LEVEL,dropInvalid:$LOG_LEVEL,DropDNSrep:$LOG_LEVEL\""
+    drop_default: "\"AllowICMPs,Broadcast(DROP),Multicast(DROP)\""
+    nfqueue_default: "\"None\""
+    queue_default: "\"None\""
+    reject_default: "\"AllowICMPs,Broadcast(DROP),Multicast(DROP)\""
+
+  ###############################################################################
+  #      R S H / R C P  C O M M A N D S
+  ###############################################################################
+  commands:
+    rcp_command: "'scp ${files} ${root}@${system}:${destination}'"
+    rsh_command: "'ssh ${root}@${system} ${command}'"
+
+  ###############################################################################
+  #     F I R E W A L L   O P T I O N S
+  ###############################################################################
+  fw_options:
+    accounting: "Yes"
+    accounting_table: "filter"
+    adminisabsentminded: "Yes"
+    autocomment: "Yes"
+    autohelpers: "Yes"
+    automake: "No"
+    balance_providers: ""
+    basic_filters: "No"
+    blacklist: "\"NEW,INVALID,UNTRACKED\""
+    clampmss: "No"
+    clear_tc: "No"
+    complete: "No"
+    defer_dns_resolution: "Yes"
+    delete_then_add: "Yes"
+    dont_load: ""
+    dynamic_blacklist: "Yes"
+    expand_policies: "Yes"
+    exportmodules: "Yes"
+    fastaccept: "No"
+    forward_clear_mark: "Yes"
+    helpers: ""
+    ignoreunknownvariables: "No"
+    implicit_continue: "No"
+    ipset_warnings: "Yes"
+    ip_forwarding: "On"
+    #keep_rt_tables: "No"
+    maclist_table: "filter"
+    maclist_ttl: ""
+    mangle_enabled: "Yes"
+    mark_in_forward_chain: "No"
+    miniupnpd: ""
+    mutex_timeout: "60"
+    optimize: "All"
+    optimize_accounting: "No"
+    perl_hash_seed: "0"
+    reject_action: ""
+    rename_combined: "Yes"
+    require_interface: "No"
+    restart: "restart"
+    restore_default_route: "Yes"
+    restore_routemarks: "Yes"
+    save_ipsets: "No"
+    tc_enabled: "No"
+    tc_expert: "No"
+    tc_priomap: "\"2 3 3 3 2 3 1 1 2 2 2 2 2 2 2 2\""
+    track_providers: "Yes"
+    track_rules: "No"
+    use_default_rt: "Yes"
+    use_nflog_size: "No"
+    use_physical_names: "No"
+    use_rt_names: "No"
+    verbose_messages: "Yes"
+    warnoldcapversion: "Yes"
+    workarounds: "Yes"
+    zero_marks: "No"
+    zone2zone: "-"
+
+  ###############################################################################
+  #     P A C K E T   D I S P O S I T I O N
+  ###############################################################################
+  packet_disposition:
+    blacklist_disposition: "DROP"
+    invalid_disposition: "CONTINUE"
+    maclist_disposition: "REJECT"
+    related_disposition: "ACCEPT"
+    sfilter_disposition: "DROP"
+    rpfilter_disposition: "DROP"
+    smurf_disposition: "DROP"
+    tcp_flags_disposition: "DROP"
+    untracked_disposition: "CONTINUE"
+
+  ################################################################################
+  #     P A C K E T  M A R K  L A Y O U T
+  ################################################################################
+  packet_marks:
+    tc_bits: ""
+    provider_bits: ""
+    provider_offset: ""
+    mask_bits: ""
+    zone_bits: "0"

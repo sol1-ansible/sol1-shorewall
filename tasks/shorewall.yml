@@ -1,12 +1,9 @@
 ---
 # Shorewall tasks file for Myatu.shorewall
 
-- name: Gather base Shorewall configuration variables
-  include_vars: shorewall_conf.yml
-
 - name: Combine all Shorewall configuration variables
   set_fact:
-    shorewall_conf: "{{ shorewall_conf_base|combine(shorewall_conf) }}"   
+    shorewall_conf: "{{ shorewall_conf_defaults|combine(shorewall_conf, recursive=True) }}"   
 
 - name: Install Shorewall and dependencies
   package:
