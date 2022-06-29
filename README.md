@@ -7,10 +7,10 @@ Ansible role which installs and configures [Shorewall](http://shorewall.org/) an
 
 ## Installation
 
-```
+
 ### TODO ###
-### This info needs to be updated to new repo when I get it upped ###   $ ansible-galaxy install Myatu.shorewall
-```
+### This info needs to be updated to new repo when I get it upped ###   $ ansible-galaxy install sol1.shorewall
+
 
 ## Requirements
 
