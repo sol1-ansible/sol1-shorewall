@@ -56,7 +56,7 @@ shorewall_tunnels | `type`, `zone`, `gateway`, `gateway_zone`, `comment`
 
 ### shorewall_run - Ansible Shorewall role run or not
 
-This allows you to protect against overwriting an existing Shorewall configuration on a host if you no longer with Ansible to run this role against a specific host.
+This allows you to protect against overwriting an existing Shorewall configuration on a host if you no longer wish Ansible to run this role against a specific host.
 If this host var is not set to true for a specific host then the Shorewall role will not run against that host.
 
 #### Example
