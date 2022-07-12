@@ -1,0 +1,28 @@
+---
+
+- name: Remove incompatible firewall packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ shorewall_incompatible_packages|default([]) }}"
+  when: (shorewall_package_state != "absent")
+
+# Change console logging levels so Shorewall logs don't fill the local console
+# See Shorewall FAQ Item 16 for details why https://shorewall.org/FAQ.htm#Logging
+- ansible.posix.sysctl:
+    name: kernel.printk
+    value: '4 4 1 7'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Shorewall duplicate TC Interfaces entries check
+  set_fact:
+    shorewall_duplicate_tcinterfaces: true
+  when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is defined)
+
+- include: shorewall.yml
+  when: (shorewall_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)
+
+- include: shorewall6.yml
+  when: (shorewall6_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)
