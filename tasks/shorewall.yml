@@ -3,267 +3,265 @@
 
 - name: Combine all Shorewall configuration variables
   set_fact:
-    shorewall_conf: "{{ shorewall_conf_defaults|combine(shorewall_conf, recursive=True) }}"   
+    shorewall_conf: "{{ shorewall_conf_defaults|combine(shorewall_conf, recursive=True) }}"
 
 - name: Install Shorewall and dependencies
   package:
     name: "{{ item }}"
     state: "{{ shorewall_package_state }}"
   with_items: "{{ shorewall_packages }}"
-  notify: 
+  notify:
     - enable shorewall
   tags:
     - packages
 
-- block:
-  - name: Obtain Shorewall version
-    command: shorewall version
-    register: shorewall_version_result
-    changed_when: False
+- name: Obtain Shorewall version
+  command: shorewall version
+  register: shorewall_version_result
+  changed_when: False
 
-  - name: Convert Shorewall version var
-    set_fact:
-      shorewall_version: "{{ '.'.join( shorewall_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
+- name: Convert Shorewall version var
+  set_fact:
+    shorewall_version: "{{ '.'.join( shorewall_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
 
-  - name: Generate Shorewall essential configuration files
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - shorewall.conf
-      - interfaces
-      - zones
-      - policy
-      - rules
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
+- name: Generate Shorewall essential configuration files
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - shorewall.conf
+    - interfaces
+    - zones
+    - policy
+    - rules
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
 
-  - name: Generate Shorewall params configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - params
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_params is defined
+- name: Generate Shorewall params configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - params
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_params is defined
 
-  - name: Generate Shorewall routes configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - routes
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_routes is defined
+- name: Generate Shorewall routes configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - routes
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_routes is defined
 
-  - name: Generate Shorewall tcinterfaces configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - tcinterfaces
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is not defined)
+- name: Generate Shorewall tcinterfaces configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - tcinterfaces
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is not defined)
 
-  - name: Generate Shorewall actions configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - actions
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_actions is defined
+- name: Generate Shorewall actions configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - actions
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_actions is defined
 
-  - name: Generate Shorewall hosts configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - hosts
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_hosts is defined
+- name: Generate Shorewall hosts configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - hosts
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_hosts is defined
 
-  - name: Generate Shorewall providers configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - providers
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_providers is defined
+- name: Generate Shorewall providers configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - providers
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_providers is defined
 
-  - name: Generate Shorewall rtrules configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - rtrules
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_rtrules is defined
+- name: Generate Shorewall rtrules configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - rtrules
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_rtrules is defined
 
-  - name: Generate Shorewall mangle configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - mangle
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_mangle is defined
+- name: Generate Shorewall mangle configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - mangle
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_mangle is defined
 
-  - name: Generate Shorewall tunnels configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - tunnels
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_tunnels is defined
+- name: Generate Shorewall tunnels configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - tunnels
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_tunnels is defined
 
-  - name: Generate Shorewall stoppedrules configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - stoppedrules
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_stoppedrules is defined
+- name: Generate Shorewall stoppedrules configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - stoppedrules
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_stoppedrules is defined
 
-  - name: Generate Shorewall nat configuration file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - nat
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: shorewall_nat is defined
+- name: Generate Shorewall nat configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - nat
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_nat is defined
 
-  - name: debug shorewall_version
-    debug:
-      var: shorewall_version
+- name: debug shorewall_version
+  debug:
+    var: shorewall_version
 
-  - name: Generate Shorewall masq file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - masq
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: (shorewall_version|float < 5.0) and (shorewall_masq is defined)
+- name: Generate Shorewall masq file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - masq
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: (shorewall_version|float < 5.0) and (shorewall_masq is defined)
 
-  - name: Generate Shorewall snat file
-    template:
-      dest: "/etc/shorewall/{{ item }}"
-      src: "shorewall/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - snat
-    notify:
-      - restart shorewall
-    tags:
-      - configuration
-    when: (shorewall_version|float >= 5.0) and (shorewall_masq is defined or shorewall_snat is defined)
+- name: Generate Shorewall snat file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - snat
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: (shorewall_version|float >= 5.0) and (shorewall_masq is defined or shorewall_snat is defined)
 
-  - name: Verify Shorewall configuration
-    command: shorewall check
-    changed_when: False
-    tags:
-      - tests
+- name: Verify Shorewall configuration
+  command: shorewall check
+  changed_when: False
+  tags:
+    - tests
 
-  - name: Generate Shorewall service configuration
-    template:
-      dest: /etc/default/shorewall
-      src: default/shorewall.j2
-      owner: root
-      group: root
-      mode: 0640
-    notify: 
-      - restart shorewall
-    tags:
-      - configuration
-    when: (shorewall_package_state != "absent")
+- name: Generate Shorewall service configuration
+  template:
+    dest: /etc/default/shorewall
+    src: default/shorewall.j2
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: (shorewall_package_state != "absent")
 
-  - name: Enable Shorewall service in systemd
-    systemd:
-      name: shorewall
-      enabled: yes
-      masked: no
- 
+- name: Enable Shorewall service in systemd
+  systemd:
+    name: shorewall
+    enabled: yes
+    masked: no
