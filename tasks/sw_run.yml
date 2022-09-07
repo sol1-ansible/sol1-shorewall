@@ -16,13 +16,8 @@
     state: present
     reload: yes
 
-- name: Shorewall duplicate TC Interfaces entries check
-  set_fact:
-    shorewall_duplicate_tcinterfaces: true
-  when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is defined)
-
 - include: shorewall.yml
-  when: (shorewall_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)
+  when: (shorewall_run|bool)
 
 - include: shorewall6.yml
-  when: (shorewall6_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)
+  when: (shorewall6_run|bool)

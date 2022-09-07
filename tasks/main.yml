@@ -15,6 +15,11 @@
     - configuration
     - packages
 
+- name: Check duplicate tcinterfaces setting
+  debug:
+    msg: Checking if tcinterfaces is set for both Shorewall and Shorewall6
+  failed_when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is defined)
+
 - include: sw_run.yml
   when: (shorewall_run|bool) or (shorewall6_run|bool)
 
@@ -27,8 +32,3 @@
   debug:
     msg: "Skipped Shorewall6 configuration because dead man's switch var 'shorewall6_run' is not set to true"
   when: not shorewall6_run|bool
-
-- name: Abort if tcinterfaces vars exist for both Shorewall and Shorewall6
-  debug:
-    msg: "Aborted Shorewall configuration because tcinterfaces is defined in both Shorewall and Shorewall6 vars... you can only define this once"
-  when: shorewall_duplicate_tcinterfaces is defined
