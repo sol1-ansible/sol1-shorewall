@@ -20,15 +20,23 @@
     msg: Checking if tcinterfaces is set for both Shorewall and Shorewall6
   failed_when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is defined)
 
-- include: sw_run.yml
-  when: (shorewall_run|bool) or (shorewall6_run|bool)
+- name: Remove incompatible firewall packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ shorewall_incompatible_packages|default([]) }}"
+  when: (shorewall_package_state != "absent")
 
-- name: Shorewall dead man's switch
-  debug:
-    msg: "Skipped Shorewall configuration because dead man's switch var 'shorewall_run' is not set to true"
-  when: not shorewall_run|bool
+# Change console logging levels so Shorewall logs don't fill the local console
+# See Shorewall FAQ Item 16 for details why https://shorewall.org/FAQ.htm#Logging
+- ansible.posix.sysctl:
+    name: kernel.printk
+    value: '4 4 1 7'
+    sysctl_set: yes
+    state: present
+    reload: yes
 
-- name: Shorewall6 dead man's switch
-  debug:
-    msg: "Skipped Shorewall6 configuration because dead man's switch var 'shorewall6_run' is not set to true"
-  when: not shorewall6_run|bool
+- include: shorewall.yml
+
+- include: shorewall6.yml
+  when: (shorewall6_enabled|bool)

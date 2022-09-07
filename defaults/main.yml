@@ -1,10 +1,8 @@
 ---
 # Defaults file for Myatu.shorewall
 
-# shorewall_run is a safeguard to prevent default values overwriting good values
-# in case host_vars aren't found (ie: somebody renamed the inventory and not the host_vars)
-shorewall_run: false
-shorewall6_run: false
+# whether to install, configure shorewall6 for IPv6
+shorewall6_enabled: false
 
 shorewall_conf: {}
 shorewall6_conf: {}
@@ -103,7 +101,7 @@ shorewall6_zones:
 
 
 # Shorewall base vars for Myatu.shorewall
-shorewall_conf_defaults: 
+shorewall_conf_defaults:
   ###############################################################################
   #                      S T A R T U P   E N A B L E D
   ###############################################################################

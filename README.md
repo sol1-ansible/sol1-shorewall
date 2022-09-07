@@ -29,7 +29,6 @@ Name | Description
 
 Variable | Dictionary / Options
 --- | ---
-shorewall_run | "false", "true"
 shorewall_package_state | "present", "latest", "absent"
 shorewall_startup | "1" or "0"
 shorewall_conf | *this variable uses standard option / value pairs*
@@ -54,20 +53,13 @@ shorewall_tunnels | `type`, `zone`, `gateway`, `gateway_zone`, `comment`
 
 
 
-### shorewall_run - Ansible Shorewall role run or not
+### shorewall6_enabled - Enable shorewall6 installation and configuration
 
-This allows you to protect against overwriting an existing Shorewall configuration on a host if you no longer wish Ansible to run this role against a specific host.
-If this host var is not set to true for a specific host then the Shorewall role will not run against that host.
-
-#### Example
-
-```yaml
-shorewall_run: true
-```
+This may be set to true to enable IPv6 rule management with shorewall.
 
 ### shorewall_package_state - Shorewall package state
 
-See the Ansible [package module](http://docs.ansible.com/ansible/package_module.html) information for more details. 
+See the Ansible [package module](http://docs.ansible.com/ansible/package_module.html) information for more details.
 
 It allows you to control whether Shorewall and dependencies should be either installed (*"present"*), installed / upgraded to their most recent version (*"latest"*) or should be removed (*"absent"*).
 
@@ -300,7 +292,7 @@ shorewall_tunnels:
 ```
 
 
- 
+
 ## Example Playbook
 
 ```yml
@@ -343,7 +335,7 @@ shorewall_tunnels:
 * [Simon Bärlocher](https://sbaerlocher.ch)
 * Farhad Shahbazi
 * Sascha Biberhofer
- 
+
 ## License
 
 This project is under the MIT License. See the LICENSE file for the full license text.
