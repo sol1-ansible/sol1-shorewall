@@ -6,6 +6,9 @@
 shorewall_run: false
 shorewall6_run: false
 
+shorewall_skip_restart: false
+shorewall6_skip_restart: false
+
 shorewall_conf: {}
 shorewall6_conf: {}
 

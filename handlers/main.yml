@@ -11,6 +11,8 @@
 
 - name: restart shorewall
   service: name={{ shorewall_service_name }} state=restarted
+  when: not (shorewall_skip_restart|bool)
 
 - name: restart shorewall6
   service: name={{ shorewall6_service_name }} state=restarted
+  when: not (shorewall6_skip_restart|bool)
