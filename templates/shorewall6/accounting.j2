@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+#
+# Shorewall6 - accounting File
+#
+# The manpage is online at
+# https://shorewall.org/manpages6/shorewall6-accounting.html
+# https://shorewall.org/Accounting.html
+#
+################################################################################################################
+#ACTION         CHAIN   SOURCE  DEST    PROTO   DPORT   SPORT   USER    MARK    IPSEC
+
+{% for rule in shorewall6_accounting %}{% if rule.comment is defined %}# {{ rule.comment }} {% endif %}
+{% if rule.action == '?COMMENT' %}
+{{ rule.action | default('') }} {{ rule.iptable_comment | default('') }}
+{% else %}
+{{ rule.action | default('-') }} {{ rule.chain | default('-') }} {{ rule.source | default('-') }} {{ rule.dest | default('-') }} {{ rule.proto | default('-') }} {{ rule.dport | default('-') }} {{ rule.sport | default('-') }} {{ rule.user | default('-') }} {{ rule.mark | default('-') }} {{ rule.ipsec | default('') }}
+{% endif %}
+{% endfor %}
+
+#LAST LINE -- DO NOT REMOVE

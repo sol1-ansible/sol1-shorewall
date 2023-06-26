@@ -208,6 +208,21 @@
       - configuration
     when: shorewall6_nat is defined
 
+  - name: Generate Shorewall6 accounting configuration file
+    template:
+      dest: "/etc/shorewall6/{{ item }}"
+      src: "shorewall6/{{ item }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    with_items:
+      - accounting
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
+    when: shorewall6_accounting is defined
+
   - name: debug shorewall6_version
     debug:
       var: shorewall6_version

@@ -207,6 +207,21 @@
     - configuration
   when: shorewall_nat is defined
 
+- name: Generate Shorewall accounting configuration file
+  template:
+    dest: "/etc/shorewall/{{ item }}"
+    src: "shorewall/{{ item }}.j2"
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - accounting
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
+  when: shorewall_accounting is defined
+
 - name: debug shorewall_version
   debug:
     var: shorewall_version
