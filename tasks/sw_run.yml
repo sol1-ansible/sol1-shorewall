@@ -21,8 +21,8 @@
     shorewall_duplicate_tcinterfaces: true
   when: (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is defined)
 
-- include: shorewall.yml
+- import_tasks: shorewall.yml
   when: (shorewall_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)
 
-- include: shorewall6.yml
+- import_tasks: shorewall6.yml
   when: (shorewall6_run|bool) and (not shorewall_duplicate_tcinterfaces is defined)

@@ -15,7 +15,7 @@
     - configuration
     - packages
 
-- include: sw_run.yml
+- import_tasks: sw_run.yml
   when: (shorewall_run|bool) or (shorewall6_run|bool)
 
 - name: Shorewall dead man's switch
