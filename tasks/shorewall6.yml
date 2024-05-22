@@ -332,7 +332,6 @@
     changed_when: False
     tags:
       - tests
-    tags:
       - configuration
 
   - name: Generate Shorewall6 service configuration
