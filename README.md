@@ -299,8 +299,28 @@ shorewall_tunnels:
   - { type: ipsec, zone: net, gateway: "0.0.0.0/0", gateway_zones: "vpn1,vpn2" }
 ```
 
+### shorewall[6]_[init|start|started|stop|stopped]
 
- 
+Defined as lists, 
+
+/etc/shorewall[6]/init - shell commands that you wish to execute at the beginning of a “shorewall start”, "shorewall reload" or “shorewall restart”. 
+
+/etc/shorewall[6]/start - shell commands that you wish to execute near the completion of a “shorewall start”, "shorewall reload" or “shorewall restart” 
+
+/etc/shorewall[6]/started - shell commands that you wish to execute after the completion of a “shorewall start”, "shorewall reload" or “shorewall restart” 
+
+/etc/shorewall[6]/stop - commands that you wish to execute at the beginning of a “shorewall stop”. 
+
+/etc/shorewall[6]/stopped - shell commands that you wish to execute at the completion of a “shorewall stop”. 
+
+
+#### Example
+
+```yaml
+shorewall_started:
+  - { comment: "conntrack -F is good for your health (Dave)", command: "conntrack -F" }
+```
+
 ## Example Playbook
 
 ```yml
