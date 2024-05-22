@@ -1,0 +1,5 @@
+# shell commands that you wish to execute at the beginning of a “shorewall start”, "shorewall reload" or “shorewall restart”.
+
+{% for i in shorewall6_init %}{% if i.comment is defined %}# {{ i.comment }} {% endif %} 
+{{ i.command }}
+{% endfor %}

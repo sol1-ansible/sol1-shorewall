@@ -4,6 +4,8 @@
 - name: Combine all Shorewall6 configuration variables
   set_fact:
     shorewall6_conf: "{{ shorewall6_conf_defaults|combine(shorewall6_conf, recursive=True) }}"
+  tags:
+    - configuration
 
 - name: Install Shorewall6 and dependencies
   package:
@@ -20,10 +22,14 @@
     command: shorewall6 version
     register: shorewall6_version_result
     changed_when: False
+    tags:
+      - configuration
 
   - name: Convert Shorewall6 version var
     set_fact:
       shorewall6_version: "{{ '.'.join( shorewall6_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
+    tags:
+      - configuration
 
   - name: Generate Shorewall6 essential configuration files
     template:
@@ -257,11 +263,31 @@
       - configuration
     when: (shorewall6_version|float >= 5.0) and (shorewall6_masq is defined or shorewall6_snat is defined)
 
+  - name: Generate Shorewall init, start, started, stop, stopped files
+    template:
+      dest: "/etc/shorewall6/{{ item.name }}"
+      src: "shorewall6/{{ item.name }}.j2"
+      owner: root
+      group: root
+      mode: 0640
+    notify:
+      - restart shorewall
+    tags:
+      - configuration
+    with_items:
+      - { name: 'init', when: "{{ shorewall6_init | default(False) }}" }
+      - { name: 'start', when: "{{ shorewall6_start | default(False) }}" }
+      - { name: 'started', when: "{{ shorewall6_started | default(False) }}" }
+      - { name: 'stop', when: "{{ sshorewall6_stop | default(False) }}" }
+      - { name: 'stopped', when: "{{ shorewall6_stopped | default(False) }}" }
+    when: item.when
+
   - name: Verify Shorewall6 configuration
     command: shorewall6 check
     changed_when: False
     tags:
       - tests
+      - configuration
 
   - name: Generate Shorewall6 service configuration
     template:

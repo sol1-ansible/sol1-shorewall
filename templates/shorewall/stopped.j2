@@ -1,0 +1,5 @@
+# shell commands that you wish to execute at the completion of a “shorewall stop”.
+
+{% for i in shorewall_stopped %}{% if i.comment is defined %}# {{ i.comment }} {% endif %} 
+{{ i.command }}
+{% endfor %}
