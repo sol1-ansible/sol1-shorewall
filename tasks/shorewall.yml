@@ -30,6 +30,28 @@
   tags:
     - configuration
 
+- name: Prepend common_shorewall_rules to shorewall_rules
+  set_fact: 
+    shorewall_rules: "{{ merged_sorted_rules | from_yaml }}"
+  vars:
+    _rules_combined: "{{ (common_shorewall_rules | default({}), shorewall_rules | default({}) ) | community.general.lists_mergeby('section', recursive=true, list_merge='append') }}"
+    merged_sorted_rules: |
+      {%- set section_order = ['ALL', 'ESTABLISHED', 'RELATED', 'INVALID', 'UNTRACKED', 'NEW'] %}
+      {%- set ordered_rules = [] %}
+      {%- for section in section_order %}
+        {%- for rule in _rules_combined %}
+          {%- if rule.section == section %}
+            {%- set _ = ordered_rules.append(rule) %}
+          {%- endif %}
+        {%- endfor %}
+      {%- endfor %}
+      {%- set unordered_rules = _rules_combined | rejectattr('section', 'in', section_order) | list %}
+      {%- set final_rules = ordered_rules + unordered_rules %}
+      {{ final_rules | to_yaml }}
+  when: common_shorewall_rules is defined
+  tags:
+    - configuration
+
 - name: Generate Shorewall essential configuration files
   template:
     dest: "/etc/shorewall/{{ item }}"
@@ -45,6 +67,29 @@
     - rules
   notify:
     - restart shorewall
+  tags:
+    - configuration
+
+- name: Prepend common_shorewall_params to shorewall_params
+  set_fact:
+    shorewall_params: "{{ merged_params_yaml | from_yaml }}"
+  vars:
+    _params_combined: "{{ common_shorewall_params | default([]) + shorewall_params | default([])  }}"
+    merged_params_yaml: |
+      {%- set temp = {} %}
+      {%- for param in _params_combined %}
+        {%- if param['name'] in temp %}
+          {%- set _ = temp.update({ param['name']: temp[param['name']] ~ ',' ~ param['value'] }) %}
+        {%- else %}
+          {%- set _ = temp.update({ param['name']: param['value'] }) %}
+        {%- endif %}
+      {%- endfor %}
+      {%- set result = [] %}
+      {%- for name, value in temp.items() %}
+        {%- set _ = result.append({'name': name, 'value': value}) %}
+      {%- endfor %}
+      {{ result | to_yaml }}
+  when: common_shorewall_params is defined
   tags:
     - configuration
 
