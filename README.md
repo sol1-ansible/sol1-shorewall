@@ -7,14 +7,26 @@ Ansible role which installs and configures [Shorewall](http://shorewall.org/) an
 
 ## Installation
 
+Install this role in your Ansible roles path.
 
-### TODO ###
-### This info needs to be updated to new repo when I get it upped ###   $ ansible-galaxy install sol1.shorewall
+Example using git:
+
+```bash
+git clone <role-repo-url> roles/sol1-shorewall
+```
 
 
 ## Requirements
 
-Ansible version 2.0 or better.
+- Ansible 2.10 or better
+- `ansible.posix` collection (used by `ansible.posix.sysctl`)
+- Shorewall / Shorewall6 5.2.0 or better on destination hosts
+
+Operational safety note:
+
+- The role validates configured `shorewall_interfaces` / `shorewall6_interfaces` names against detected host interfaces.
+- If unknown interface names are found, a warning is printed and service restart is automatically skipped for safety.
+- Interfaces matching `shorewall_allowed_missing_interface_regex` are treated as transient and allowed to be absent (default: `^(tun|tap|wg|ppp|vti|ip_vti|xfrm|tailscale).*`).
 
 ## Role Handlers
 
@@ -30,21 +42,18 @@ Name | Description
 Variable | Dictionary / Options
 --- | ---
 shorewall_run | "false", "true"
-shorewall_package_state | "present", "latest", "absent"
+shorewall_install_packages | "true", "false"
 shorewall_startup | "1" or "0"
 shorewall_conf | *this variable uses standard option / value pairs*
 shorewall_interfaces | `zone`, `interface`, `options`, `comment`
-shorewall_masq | `source`, `interface`, `proto`, `ports`, `ipsec`, `mark`, `user`, `switch`, `original_dest`, `comment`
 shorewall_policies | `source`, `dest`, `policy`, `log_level`, `burst_limit`, `connlimit`, `comment`
 shorewall_rules | **sections**: `section`, **rules**: `rule`.  For each **rule**: `action`, `source`, `dest`, `proto`, `dest_port`, `source_port`, `original_dest`, `rate_limit`, `user_group`, `mark`, `connlimit`, `time`, `headers`, `switch`, `helper`, `when`, `comment`
-shorewall_snat | `actrion`, `action_param`, `source`, `dest`, `proto`, `port`, `ipsec`, `mark`, `user`, `switch`, `original_dest`, `probability`, `comment`
+shorewall_snat | `action`, `action_param`, `source`, `dest`, `proto`, `port`, `ipsec`, `mark`, `user`, `switch`, `original_dest`, `probability`, `comment`
 shorewall_zones | `zone`, `type`, `options`, `options_in`, `options_out`, `comment`
 shorewall_hosts | `zone`, `hosts`, `options`, `comment`
 shorewall_params | [ `import` | `comment` | `name`, `value` ] **imports are processed first then name/value pairs**
 shorewall_actions | `name`, `options`, `description`, `comment`
-shorewall_hosts | `zone`, `hosts`, `options`, `comment`
 shorewall_mangle | `action`, `source`, `dest`, `proto`, `dport`, `sport`, `user`, `test`, `comment`
-shorewall_masq for Shorewall < 5.0 | `interface`, `source`, `address`, `proto`, `ports`, `ipsec`, `mark`, `user`, `switch`, `original_dest`, `comment`
 shorewall_providers | `name`, `number`, `mark`, `duplicate`, `interface`, `gateway`, `options`, `copy_iface`, `comment`
 shorewall_rtrules | `source`, `dest`, `provider`, `priority`, `mask`, `comment`
 shorewall_routes | `provider`, `dest`, `gateway`, `device`, `options`, `comment`
@@ -65,11 +74,18 @@ If this host var is not set to true for a specific host then the Shorewall role 
 shorewall_run: true
 ```
 
-### shorewall_package_state - Shorewall package state
+### shorewall_install_packages - Install package toggle
 
-See the Ansible [package module](http://docs.ansible.com/ansible/package_module.html) information for more details. 
+Controls whether package installation tasks run for Shorewall and Shorewall6.
 
-It allows you to control whether Shorewall and dependencies should be either installed (*"present"*), installed / upgraded to their most recent version (*"latest"*) or should be removed (*"absent"*).
+- `true` (default): install required Shorewall and Shorewall6 packages
+- `false`: skip package installation tasks (useful for faster rules-only updates)
+
+#### Example
+
+```yaml
+shorewall_install_packages: false
+```
 
 
 ### shorewall_startup - Shorewall startup behaviour
@@ -109,12 +125,6 @@ Define the interfaces on the system and optionally associate them with zones in 
 shorewall_interfaces:
   - { zone: net, interface: enp1s0, options: "dhcp,logmartians", comment: "Primary WAN Interface" }
 ```
-
-### TODO ### Expand this example
-### shorewall_masq - Masquerade/SNAT
-
-Define Masquerade/SNAT in the `/etc/shorewall/masq` file. See the Shorewall [masq man page](https://shorewall.org/4.6/manpages/shorewall-masq.html) for more details.
-
 
 ### shorewall_policies - Policies
 
@@ -168,10 +178,16 @@ shorewall_rules:
 
 ```
 
-### TODO ### Expand on this example
 ### shorewall_snat - SNAT
 
 Define dynamic NAT (Masquerading) and to define Source NAT (SNAT) in the `/etc/shorewall/snat` file. See the Shorewall [snat man page](https://shorewall.org/manpages/shorewall-snat.html) for more details.
+
+#### Example
+
+```yaml
+shorewall_snat:
+  - { action: SNAT, action_param: "203.0.113.10", source: "10.0.0.0/24", dest: "0.0.0.0/0", proto: "-", port: "-", comment: "SNAT LAN traffic to WAN IP" }
+```
 
 
 ### shorewall_zones - Zones
@@ -187,10 +203,17 @@ shorewall_zones:
 ```
 
 
-### TODO ### Expand on this example
 ### shorewall_hosts - Hosts
 
 Define multiple zones accessed through a single interface in the `/etc/shorewall/hosts` file. See the Shorewall [hosts man page](https://shorewall.org/manpages/shorewall-hosts.html) for more details.
+
+#### Example
+
+```yaml
+shorewall_hosts:
+  - { zone: net, hosts: "203.0.113.0/24", options: "routeback", comment: "Public subnet on WAN" }
+  - { zone: loc, hosts: "10.0.10.0/24", comment: "Internal VLAN" }
+```
 
 
 ### shorewall_params - Parameters
@@ -206,16 +229,16 @@ shorewall_params:
 ```
 
 
-### TODO ### Expand on this example
 ### shorewall_actions - Actions
 
 Define Shorewall actions to allow a symbolic name to be associated with a series of one or more iptables rules `/etc/shorewall/actions` file. See the Shorewall [actions man page](https://shorewall.org/Actions.html) for more details.
 
+#### Example
 
-### TODO ### Expand on this example
-### shorewall_hosts - Hosts
-
-Define multiple zones accessed through a single interface in the `/etc/shorewall/hosts` file. See the Shorewall [hosts man page](https://shorewall.org/manpages/shorewall-hosts.html) for more details.
+```yaml
+shorewall_actions:
+  - { name: "LogDrop", options: "-", description: "Log and drop packets" }
+```
 
 
 ### shorewall_mangle - Mangle
@@ -232,7 +255,7 @@ shorewall_mangle:
 
 ### shorewall_providers - Providers
 
-Define define additional routing tables, eg for ISP failover connections using Foolsm. `/etc/shorewall/providers` file. See the Shorewall [providers man page](https://shorewall.org/manpages/shorewall-providers.html) for more details.
+Define additional routing tables, eg for ISP failover connections using Foolsm. `/etc/shorewall/providers` file. See the Shorewall [providers man page](https://shorewall.org/manpages/shorewall-providers.html) for more details.
 
 #### Example
 ```yaml
@@ -250,17 +273,24 @@ Define entries to cause traffic to be routed to one of the providers listed in s
 ```yaml
 shorewall_rtrules:
   - { source: "10.0.0.0/24", provider: "nbn", priority: "1510", comment: "Route LAN to NBN connection" }
-  - { source: "lo", provider: "nbn", priority: "1510", comment: "Route firewall traffic to NBN connecteon" }
+  - { source: "lo", provider: "nbn", priority: "1510", comment: "Route firewall traffic to NBN connection" }
 
   - { source: "10.0.0.0/24", provider: "fourg", priority: "2010", comment: "Route LAN to 4G connection with lower route weight than NBN connection for failover" }
   - { source: "lo", provider: "fourg", priority: "2010", comment: "Route firewall traffic to 4G connection with lower route weight than NBN connection for failover" }
 ```
 
 
-### TODO ### Expand on this example
 ### shorewall_routes - Routes
 
 Define routes to be added to provider routing tables in the `/etc/shorewall/routes` file.  See the Shorewall [routes man page](https://shorewall.org/manpages/shorewall-routes.html) for more details.
+
+#### Example
+
+```yaml
+shorewall_routes:
+  - { provider: "nbn", dest: "0.0.0.0/0", gateway: "203.0.113.1", device: "enp1s0", options: "persistent" }
+  - { provider: "fourg", dest: "0.0.0.0/0", gateway: "198.51.100.1", device: "enp2s0", options: "persistent" }
+```
 
 
 ### shorewall_stoppedrules - Stopped Rules
@@ -323,13 +353,11 @@ shorewall_tunnels:
 
 - Added: The `shorewall_rules` has an added option `when` for each rule, which acts similar to Ansible's `when` statement and allows rules to be conditional.
 - Added: role variable `shorewall_tunnels` for use with VPNs.
-- *Changed:* The generated `shorewall_rules` will now take into account the `?` prefix in sections (i.e. `?ESTABLISHED`), which was introduced at Shorewall version 4.6. If the Shorewall version installed is older than 4.6, this prefix will be omitted to avoid errors.
 
 ### v1.0
 
 - Added: `ipset` as a package dependency;
 - Added: role variable `shorewall_conf`, allowing each option in the shorewall.conf file to be defined;
-- Added: role variable `shorewall_package_state` to set package state of Shorewall and dependencies;
 - *Changed:* The default for `shorewall_interface` now detects the default network interface rather than fixed at `eth0` (though `eth0` is still a fall-back default);
 - **Removed:** role variables: `shorewall_verbosity`, `shorewall_log_verbosity`.  Use the `shorewall_conf` role variable to configure these instead.
 

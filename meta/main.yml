@@ -4,20 +4,24 @@ galaxy_info:
   company: Sol1 Pty Ltd
   description: Ansible role which installs and configures Shorewall and Shorewall6.
   license: MIT
-  min_ansible_version: 2.6.0
+  min_ansible_version: 2.10.0
   platforms:
     - name: Ubuntu
       versions:
-        - xenial
-        - bionic
         - focal
+        - jammy
+        - noble
     - name: Debian
       versions:
-        - stretch
         - buster
         - bullseye
+        - bookworm
+        - trixie
   galaxy_tags:
     - networking
     - security
     - firewall
   dependencies: []
+
+collections:
+  - ansible.posix

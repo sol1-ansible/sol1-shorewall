@@ -8,23 +8,15 @@
 - name: Install Shorewall6 and dependencies
   package:
     name: "{{ item }}"
-    state: "{{ shorewall6_package_state }}"
+    state: present
   with_items: "{{ shorewall6_packages }}"
   notify: 
     - enable shorewall6
   tags:
     - packages
+  when: shorewall6_install_packages | bool
 
 - block:
-  - name: Obtain Shorewall6 version
-    command: shorewall6 version
-    register: shorewall6_version_result
-    changed_when: False
-
-  - name: Convert Shorewall6 version var
-    set_fact:
-      shorewall6_version: "{{ '.'.join( shorewall6_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
-
   - name: Generate Shorewall6 essential configuration files
     template:
       dest: "/etc/shorewall6/{{ item }}"
@@ -223,25 +215,6 @@
       - configuration
     when: shorewall6_accounting is defined
 
-  - name: debug shorewall6_version
-    debug:
-      var: shorewall6_version
-
-  - name: Generate Shorewall6 masq file
-    template:
-      dest: "/etc/shorewall6/{{ item }}"
-      src: "shorewall6/{{ item }}.j2"
-      owner: root
-      group: root
-      mode: 0640
-    with_items:
-      - masq
-    notify:
-      - restart shorewall6
-    tags:
-      - configuration
-    when: (shorewall6_version|float < 5.0) and (shorewall6_masq is defined)
-
   - name: Generate Shorewall6 snat file
     template:
       dest: "/etc/shorewall6/{{ item }}"
@@ -255,7 +228,31 @@
       - restart shorewall6
     tags:
       - configuration
-    when: (shorewall6_version|float >= 5.0) and (shorewall6_masq is defined or shorewall6_snat is defined)
+    when: shorewall6_snat is defined
+
+  - name: Remove optional Shorewall6 configuration files when vars are undefined
+    file:
+      path: "/etc/shorewall6/{{ item.name }}"
+      state: absent
+    loop:
+      - { name: params, enabled: "{{ shorewall6_params is defined }}" }
+      - { name: routes, enabled: "{{ shorewall6_routes is defined }}" }
+      - { name: tcinterfaces, enabled: "{{ (shorewall6_tcinterfaces is defined) and (shorewall_tcinterfaces is not defined) }}" }
+      - { name: actions, enabled: "{{ shorewall6_actions is defined }}" }
+      - { name: hosts, enabled: "{{ shorewall6_hosts is defined }}" }
+      - { name: providers, enabled: "{{ shorewall6_providers is defined }}" }
+      - { name: rtrules, enabled: "{{ shorewall6_rtrules is defined }}" }
+      - { name: mangle, enabled: "{{ shorewall6_mangle is defined }}" }
+      - { name: tunnels, enabled: "{{ shorewall6_tunnels is defined }}" }
+      - { name: stoppedrules, enabled: "{{ shorewall6_stoppedrules is defined }}" }
+      - { name: nat, enabled: "{{ shorewall6_nat is defined }}" }
+      - { name: accounting, enabled: "{{ shorewall6_accounting is defined }}" }
+      - { name: snat, enabled: "{{ shorewall6_snat is defined }}" }
+    when: not (item.enabled | bool)
+    notify:
+      - restart shorewall6
+    tags:
+      - configuration
 
   - name: Verify Shorewall6 configuration
     command: shorewall6 check
@@ -274,7 +271,6 @@
       - restart shorewall6
     tags:
       - configuration
-    when: (shorewall6_package_state != "absent")
  
   - name: Enable Shorewall6 service in systemd
     systemd:

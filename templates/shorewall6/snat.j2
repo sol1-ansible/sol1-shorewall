@@ -10,9 +10,6 @@
 ###################################################################################################################
 #ACTION         SOURCE          DEST            PROTO   PORT   IPSEC  MARK   USER    SWITCH  ORIGDEST   PROBABILITY
 
-{% if shorewall6_masq is defined %}{% for rule in shorewall6_masq %}{% if rule.comment is defined %}# {{ rule.comment }} {% endif %} 
-MASQUERADE	{{ rule.source | default('-') }} {{ rule.interface | default('-') }}  {{ rule.proto | default('-') }} {{ rule.ports | default('-') }} {{ rule.ipsec | default('-') }} {{ rule.mark | default('-') }} {{ rule.user | default('-') }} {{ rule.switch | default('-') }} {{ rule.original_dest | default('-') }}
-{% endfor %}{% endif %}
 {% if shorewall6_snat is defined %}{% for rule in shorewall6_snat %}{% if rule.comment is defined %}# {{ rule.comment }} {% endif %} 
 {{ rule.action }}({{ rule.action_param | default('') }})  {{ rule.source | default('-') }} {{ rule.dest | default('-') }}  {{ rule.proto | default('-') }} {{ rule.port | default('-') }} {{ rule.ipsec | default('-') }} {{ rule.mark | default('-') }} {{ rule.user | default('-') }} {{ rule.switch | default('-') }} {{ rule.original_dest | default('-') }} {{ rule.probability | default('-') }}
 {% endfor %}{% endif %}

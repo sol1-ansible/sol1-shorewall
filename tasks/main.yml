@@ -15,6 +15,60 @@
     - configuration
     - packages
 
+- name: Collect detected network interfaces
+  set_fact:
+    shorewall_detected_interfaces: "{{ ansible_facts.interfaces | default(ansible_interfaces | default([])) }}"
+
+- name: Build list of invalid Shorewall IPv4 interfaces
+  set_fact:
+    shorewall_invalid_interfaces: >-
+      {{
+        shorewall_interfaces
+        | default([])
+        | selectattr('interface', 'defined')
+        | map(attribute='interface')
+        | map('regex_replace', ':.*$', '')
+        | reject('in', shorewall_detected_interfaces)
+        | reject('match', shorewall_allowed_missing_interface_regex)
+        | unique
+        | list
+      }}
+
+- name: Build list of invalid Shorewall IPv6 interfaces
+  set_fact:
+    shorewall6_invalid_interfaces: >-
+      {{
+        shorewall6_interfaces
+        | default([])
+        | selectattr('interface', 'defined')
+        | map(attribute='interface')
+        | map('regex_replace', ':.*$', '')
+        | reject('in', shorewall_detected_interfaces)
+        | reject('match', shorewall6_allowed_missing_interface_regex)
+        | unique
+        | list
+      }}
+
+- name: Enable Shorewall restart safety when IPv4 interfaces are invalid
+  set_fact:
+    shorewall_skip_restart: true
+  when: (shorewall_run|bool) and (shorewall_invalid_interfaces | length > 0)
+
+- name: Enable Shorewall6 restart safety when IPv6 interfaces are invalid
+  set_fact:
+    shorewall6_skip_restart: true
+  when: (shorewall6_run|bool) and (shorewall6_invalid_interfaces | length > 0)
+
+- name: Warn about deprecated shorewall_masq variable
+  debug:
+    msg: "WARNING: 'shorewall_masq' is deprecated and ignored. Shorewall now uses only 'shorewall_snat'."
+  when: shorewall_masq is defined
+
+- name: Warn about deprecated shorewall6_masq variable
+  debug:
+    msg: "WARNING: 'shorewall6_masq' is deprecated and ignored. Shorewall6 now uses only 'shorewall6_snat'."
+  when: shorewall6_masq is defined
+
 - import_tasks: sw_run.yml
   when: (shorewall_run|bool) or (shorewall6_run|bool)
 
@@ -32,3 +86,13 @@
   debug:
     msg: "Aborted Shorewall configuration because tcinterfaces is defined in both Shorewall and Shorewall6 vars... you can only define this once"
   when: shorewall_duplicate_tcinterfaces is defined
+
+- name: Warn when configured Shorewall IPv4 interfaces are not present on host
+  debug:
+    msg: "WARNING: Configured shorewall_interfaces include unknown interfaces {{ shorewall_invalid_interfaces }} (excluding allowed transient pattern {{ shorewall_allowed_missing_interface_regex }}). Detected interfaces: {{ shorewall_detected_interfaces }}. Restart was skipped for safety."
+  when: (shorewall_run|bool) and (shorewall_invalid_interfaces | length > 0)
+
+- name: Warn when configured Shorewall IPv6 interfaces are not present on host
+  debug:
+    msg: "WARNING: Configured shorewall6_interfaces include unknown interfaces {{ shorewall6_invalid_interfaces }} (excluding allowed transient pattern {{ shorewall6_allowed_missing_interface_regex }}). Detected interfaces: {{ shorewall_detected_interfaces }}. Restart was skipped for safety."
+  when: (shorewall6_run|bool) and (shorewall6_invalid_interfaces | length > 0)

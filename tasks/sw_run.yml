@@ -5,7 +5,6 @@
     name: "{{ item }}"
     state: absent
   with_items: "{{ shorewall_incompatible_packages|default([]) }}"
-  when: (shorewall_package_state != "absent")
 
 # Change console logging levels so Shorewall logs don't fill the local console
 # See Shorewall FAQ Item 16 for details why https://shorewall.org/FAQ.htm#Logging

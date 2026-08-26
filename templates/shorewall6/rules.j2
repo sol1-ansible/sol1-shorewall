@@ -12,7 +12,7 @@
 #                             PORT  PORT(S)  DEST      LIMIT  GROUP
 
 {% for section in shorewall6_rules %}
-{{ '' if (shorewall6_version|float < 4.6) else '?' }}SECTION {{ section.section }}
+?SECTION {{ section.section }}
 {% for rule in section.rules %}
 {% if rule.get('when', True) %}
 {% if rule.comment is defined %} 

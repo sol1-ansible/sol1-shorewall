@@ -1,8 +1,14 @@
+---
+
 shorewall_packages:
   - "shorewall"
+  - "ipset"
+  - "conntrack"  
 
 shorewall6_packages:
   - "shorewall6"
+  - "ipset"  
+  - "conntrack"  
 
 shorewall_service_name: "shorewall"
 shorewall6_service_name: "shorewall6"

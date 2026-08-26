@@ -8,21 +8,13 @@
 - name: Install Shorewall and dependencies
   package:
     name: "{{ item }}"
-    state: "{{ shorewall_package_state }}"
+    state: present
   with_items: "{{ shorewall_packages }}"
   notify:
     - enable shorewall
   tags:
     - packages
-
-- name: Obtain Shorewall version
-  command: shorewall version
-  register: shorewall_version_result
-  changed_when: False
-
-- name: Convert Shorewall version var
-  set_fact:
-    shorewall_version: "{{ '.'.join( shorewall_version_result.get('stdout', '0.0').split('.')[:2] ) }}"
+  when: shorewall_install_packages | bool
 
 - name: Generate Shorewall essential configuration files
   template:
@@ -222,25 +214,6 @@
     - configuration
   when: shorewall_accounting is defined
 
-- name: debug shorewall_version
-  debug:
-    var: shorewall_version
-
-- name: Generate Shorewall masq file
-  template:
-    dest: "/etc/shorewall/{{ item }}"
-    src: "shorewall/{{ item }}.j2"
-    owner: root
-    group: root
-    mode: 0640
-  with_items:
-    - masq
-  notify:
-    - restart shorewall
-  tags:
-    - configuration
-  when: (shorewall_version|float < 5.0) and (shorewall_masq is defined)
-
 - name: Generate Shorewall snat file
   template:
     dest: "/etc/shorewall/{{ item }}"
@@ -254,7 +227,31 @@
     - restart shorewall
   tags:
     - configuration
-  when: (shorewall_version|float >= 5.0) and (shorewall_masq is defined or shorewall_snat is defined)
+  when: shorewall_snat is defined
+
+- name: Remove optional Shorewall configuration files when vars are undefined
+  file:
+    path: "/etc/shorewall/{{ item.name }}"
+    state: absent
+  loop:
+    - { name: params, enabled: "{{ shorewall_params is defined }}" }
+    - { name: routes, enabled: "{{ shorewall_routes is defined }}" }
+    - { name: tcinterfaces, enabled: "{{ (shorewall_tcinterfaces is defined) and (shorewall6_tcinterfaces is not defined) }}" }
+    - { name: actions, enabled: "{{ shorewall_actions is defined }}" }
+    - { name: hosts, enabled: "{{ shorewall_hosts is defined }}" }
+    - { name: providers, enabled: "{{ shorewall_providers is defined }}" }
+    - { name: rtrules, enabled: "{{ shorewall_rtrules is defined }}" }
+    - { name: mangle, enabled: "{{ shorewall_mangle is defined }}" }
+    - { name: tunnels, enabled: "{{ shorewall_tunnels is defined }}" }
+    - { name: stoppedrules, enabled: "{{ shorewall_stoppedrules is defined }}" }
+    - { name: nat, enabled: "{{ shorewall_nat is defined }}" }
+    - { name: accounting, enabled: "{{ shorewall_accounting is defined }}" }
+    - { name: snat, enabled: "{{ shorewall_snat is defined }}" }
+  when: not (item.enabled | bool)
+  notify:
+    - restart shorewall
+  tags:
+    - configuration
 
 - name: Verify Shorewall configuration
   command: shorewall check
@@ -273,7 +270,6 @@
     - restart shorewall
   tags:
     - configuration
-  when: (shorewall_package_state != "absent")
 
 - name: Enable Shorewall service in systemd
   systemd:

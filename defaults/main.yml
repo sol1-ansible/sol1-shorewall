@@ -12,8 +12,13 @@ shorewall6_skip_restart: false
 shorewall_conf: {}
 shorewall6_conf: {}
 
-shorewall_package_state: "present"
-shorewall6_package_state: "{{ shorewall_package_state }}"
+shorewall_install_packages: true
+shorewall6_install_packages: "{{ shorewall_install_packages }}"
+
+# Interfaces matching this regex are allowed to be absent at runtime
+# (useful for transient VPN links like tun*, tap*, wg*, ppp*, vti*, ip_vti*, xfrm*, tailscale*).
+shorewall_allowed_missing_interface_regex: '^(tun|tap|wg|ppp|vti|ip_vti|xfrm|tailscale).*'
+shorewall6_allowed_missing_interface_regex: "{{ shorewall_allowed_missing_interface_regex }}"
 
 shorewall_startup: 1
 shorewall6_startup: "{{ shorewall_startup }}"
@@ -21,21 +26,18 @@ shorewall6_startup: "{{ shorewall_startup }}"
 shorewall_interfaces:
   - zone: net
     interface: "{{ ansible_default_ipv4.get('interface', 'eth0') }}"
-    options: "tcpflags,logmartians,routefilter,sourceroute=0"
 
 shorewall6_interfaces:
   - zone: net
     interface: "{{ ansible_default_ipv6.get('interface', 'eth0') }}"
-    options: "tcpflags,nosmurfs,sourceroute=0"
 
 shorewall_policies:
-  - source: "$FW"
+  - source: "fw"
     dest: all
     policy: ACCEPT
   - source: net
     dest: all
     policy: REJECT
-    log_level: info
   # the following policy must be last
   - source: all
     dest: all
@@ -43,7 +45,7 @@ shorewall_policies:
     log_level: info
 
 shorewall6_policies:
-  - source: "$FW"
+  - source: "fw"
     dest: all
     policy: ACCEPT
   - source: net
@@ -56,40 +58,16 @@ shorewall6_policies:
     log_level: info
 
 shorewall_rules:
-  - section: ALL
-    rules: []
-  - section: ESTABLISHED
-    rules: []
-  - section: RELATED
-    rules: []
-  - section: INVALID
-    rules: []
-  - section: UNTRACKED
-    rules: []
   - section: NEW
     rules:
-    - { action: "Invalid(DROP)", source: net, dest: "$FW", proto: tcp }
-    - { comment: "ssh" }
-    - { action: ACCEPT, source: net, dest: "$FW", proto: tcp, dest_port: "{{ ansible_ssh_port | default('ssh', True) }}" }
-    - { comment: "ping", action: ACCEPT, source: net, dest: "$FW", proto: icmp, dest_port: echo-request }
+    - { action: (SSH)ACCEPT, source: net, dest: "fw", comment: "Allow SSH to firewall" }
+    - { action: (Ping)ACCEPT, source: net, dest: "fw", comment: "Allow pings to firewall" }
 
 shorewall6_rules:
-  - section: ALL
-    rules: []
-  - section: ESTABLISHED
-    rules: []
-  - section: RELATED
-    rules: []
-  - section: INVALID
-    rules: []
-  - section: UNTRACKED
-    rules: []
   - section: NEW
     rules:
-    - { action: "Invalid(DROP)", source: net, dest: "$FW", proto: tcp }
-    - { comment: "ssh" }
-    - { action: ACCEPT, source: net, dest: "$FW", proto: tcp, dest_port: "{{ ansible_ssh_port | default('ssh', True) }}" }
-    - { comment: "ping", action: ACCEPT, source: net, dest: "$FW", proto: ipv6-icmp, dest_port: echo-request }
+    - { action: (SSH)ACCEPT, source: net, dest: "fw", comment: "Allow SSH to firewall" }
+    - { action: (Ping)ACCEPT, source: net, dest: "fw", comment: "Allow pings to firewall" }
 
 shorewall_zones:
   - zone: fw
