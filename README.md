@@ -77,6 +77,7 @@ shorewall_run: true
 ### shorewall_install_packages - Install package toggle
 
 Controls whether package installation tasks run for Shorewall and Shorewall6.
+Allows for faster re-runs if only updating rules on an existing firewall.
 
 - `true` (default): install required Shorewall and Shorewall6 packages
 - `false`: skip package installation tasks (useful for faster rules-only updates)
@@ -135,7 +136,7 @@ Define high-level policies for connections between zones in the `/etc/shorewall/
 ```yaml
 shorewall_policies:
   - { source: "fw", dest: all, policy: ACCEPT }
-  - { source: net, dest: all, policy: REJECT }
+  - { source: net, dest: all, policy: DROP }
   - { source: all, dest: all, policy: REJECT, log_level: info }
 ```
 
@@ -146,9 +147,6 @@ Specify exceptions to policies, including DNAT and REDIRECT in the `/etc/shorewa
 
 ***WARNING***: Please be sure to include a rule for SSH on the correct port, to avoid locking Ansible - and yourself - out from the remote host.
 
-#### Using the `when` conditional
-
-An option specific to this role variable. and not part of Shorewall, is the `when` conditional. This allows a rule to be included only if the condition evaluates to True.
 
 #### Examples
 
@@ -160,23 +158,6 @@ shorewall_rules:
     - { action: ACCEPT, source: all, dest: "fw", proto: icmp, dest_port: echo-request, comment: "Allow pings" }
 ```
 
-Using the `when` conditional:
-
-```yaml
-has_webserver: True
-
-# And in a task:
-#- name: Disable webserver rule
-#  set_fact:
-#    has_webserver: False
-
-shorewall_rules:
-  - section: NEW
-    rules:
-    - { action: ACCEPT, source: net, dest: "fw", proto: tcp, dest_port: ssh, comment: "Allow SSH Into the firewall" }
-    - { action: "HTTP(ACCEPT)", source: net, dest: "fw", when: "{{ has_webserver }}" }
-
-```
 
 ### shorewall_snat - SNAT
 
@@ -340,6 +321,17 @@ shorewall_tunnels:
 ```
 
 ## Changelog
+
+### v3.0
+- Drop legacy compatibility paths for old Shorewall versions and standardize on current behavior.
+- Remove deprecated masq handling and migrate role flow to snat-only semantics.
+- Add interface preflight safety checks to detect invalid configured interfaces.
+- Skip service restarts when interface validation fails, with explicit end-of-run warnings.
+- Add transient interface allowlist support for common dynamic links (tun/tap/wg/ppp/vti/ip_vti/xfrm/tailscale).
+- Add optional-file cleanup so removed vars purge stale generated config files.
+- Simplify package management flow to install-toggle control only.
+- Remove obsolete CI/test artifacts and other dead weight.
+- Refresh README and metadata: fix inaccuracies/typos, expand examples, and document current requirements.
 
 ### v2.0
 - Massive rewrite and cleanup of Templates, and Vars files and Tasks for both Shorewall and Shorewall6

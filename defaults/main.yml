@@ -12,6 +12,9 @@ shorewall6_skip_restart: false
 shorewall_conf: {}
 shorewall6_conf: {}
 
+# shorewall_install_packages allows skipping the package installation step if the
+# packages are already installed and configured allowing for faster re-runs of the
+# role when only updating rules on an existing firewall
 shorewall_install_packages: true
 shorewall6_install_packages: "{{ shorewall_install_packages }}"
 
@@ -37,7 +40,7 @@ shorewall_policies:
     policy: ACCEPT
   - source: net
     dest: all
-    policy: REJECT
+    policy: DROP
   # the following policy must be last
   - source: all
     dest: all
@@ -50,7 +53,7 @@ shorewall6_policies:
     policy: ACCEPT
   - source: net
     dest: all
-    policy: REJECT
+    policy: DROP
   # the following policy must be last
   - source: all
     dest: all
