@@ -48,6 +48,7 @@ shorewall_conf | *this variable uses standard option / value pairs*
 shorewall_interfaces | `zone`, `interface`, `options`, `comment`
 shorewall_policies | `source`, `dest`, `policy`, `log_level`, `burst_limit`, `connlimit`, `comment`
 shorewall_rules | **sections**: `section`, **rules**: `rule`.  For each **rule**: `action`, `source`, `dest`, `proto`, `dest_port`, `source_port`, `original_dest`, `rate_limit`, `user_group`, `mark`, `connlimit`, `time`, `headers`, `switch`, `helper`, `when`, `comment`
+shorewall_masq | **Deprecated:** `source`, `interface`, `proto`, `ports`, `ipsec`, `mark`, `user`, `switch`, `original_dest`, `comment`. Use `shorewall_snat` for new configuration.
 shorewall_snat | `action`, `action_param`, `source`, `dest`, `proto`, `port`, `ipsec`, `mark`, `user`, `switch`, `original_dest`, `probability`, `comment`
 shorewall_zones | `zone`, `type`, `options`, `options_in`, `options_out`, `comment`
 shorewall_hosts | `zone`, `hosts`, `options`, `comment`
@@ -159,9 +160,19 @@ shorewall_rules:
 ```
 
 
+### shorewall_masq - Masquerading (deprecated)
+
+`shorewall_masq` is retained for compatibility with existing host variables. Its rules are written to `/etc/shorewall/snat`; a separate `masq` file is not generated. Use `shorewall_snat` for new configuration.
+
+```yaml
+shorewall_masq:
+  - { interface: enp2s0, source: "192.168.26.0/24" }
+```
+
+
 ### shorewall_snat - SNAT
 
-Define dynamic NAT (Masquerading) and to define Source NAT (SNAT) in the `/etc/shorewall/snat` file. See the Shorewall [snat man page](https://shorewall.org/manpages/shorewall-snat.html) for more details.
+Define dynamic NAT (Masquerading) and Source NAT (SNAT) in the `/etc/shorewall/snat` file. This is the preferred variable for new configuration. See the Shorewall [snat man page](https://shorewall.org/manpages/shorewall-snat.html) for more details.
 
 #### Example
 
@@ -374,4 +385,3 @@ This project is under the MIT License. See the LICENSE file for the full license
 - Copyright (c) 2022 Sol1 Pty Ltd
 - Copyright (c) 2017 Michael Green
 - Copyright (c) 2016 Simon Bärlocher
-

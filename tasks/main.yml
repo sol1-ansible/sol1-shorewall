@@ -69,7 +69,7 @@
 
 - name: Warn about deprecated shorewall6_masq variable
   debug:
-    msg: "WARNING: 'shorewall6_masq' is deprecated and ignored. Shorewall6 now uses only 'shorewall6_snat'."
+    msg: "WARNING: 'shorewall6_masq' is deprecated. Its rules are written to the Shorewall6 'snat' file; prefer 'shorewall6_snat' for new configuration."
   when: shorewall6_masq is defined
 
 - name: Abort if tcinterfaces vars exist for both Shorewall and Shorewall6
