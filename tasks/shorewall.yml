@@ -227,7 +227,7 @@
     - restart shorewall
   tags:
     - configuration
-  when: shorewall_snat is defined
+  when: shorewall_masq is defined or shorewall_snat is defined
 
 - name: Remove optional Shorewall configuration files when vars are undefined
   file:
@@ -246,7 +246,7 @@
     - { name: stoppedrules, enabled: "{{ shorewall_stoppedrules is defined }}" }
     - { name: nat, enabled: "{{ shorewall_nat is defined }}" }
     - { name: accounting, enabled: "{{ shorewall_accounting is defined }}" }
-    - { name: snat, enabled: "{{ shorewall_snat is defined }}" }
+    - { name: snat, enabled: "{{ shorewall_masq is defined or shorewall_snat is defined }}" }
   when: not (item.enabled | bool)
   notify:
     - restart shorewall

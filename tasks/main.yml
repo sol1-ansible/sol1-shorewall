@@ -59,28 +59,18 @@
     shorewall6_skip_restart: true
   when: (shorewall6_run|bool) and (shorewall6_invalid_interfaces | length > 0)
 
+- import_tasks: sw_run.yml
+  when: (shorewall_run|bool) or (shorewall6_run|bool)
+
 - name: Warn about deprecated shorewall_masq variable
   debug:
-    msg: "WARNING: 'shorewall_masq' is deprecated and ignored. Shorewall now uses only 'shorewall_snat'."
+    msg: "WARNING: 'shorewall_masq' is deprecated. Its rules are written to the Shorewall 'snat' file; prefer 'shorewall_snat' for new configuration."
   when: shorewall_masq is defined
 
 - name: Warn about deprecated shorewall6_masq variable
   debug:
     msg: "WARNING: 'shorewall6_masq' is deprecated and ignored. Shorewall6 now uses only 'shorewall6_snat'."
   when: shorewall6_masq is defined
-
-- import_tasks: sw_run.yml
-  when: (shorewall_run|bool) or (shorewall6_run|bool)
-
-- name: Shorewall dead man's switch
-  debug:
-    msg: "Skipped Shorewall configuration because dead man's switch var 'shorewall_run' is not set to true"
-  when: not shorewall_run|bool
-
-- name: Shorewall6 dead man's switch
-  debug:
-    msg: "Skipped Shorewall6 configuration because dead man's switch var 'shorewall6_run' is not set to true"
-  when: not shorewall6_run|bool
 
 - name: Abort if tcinterfaces vars exist for both Shorewall and Shorewall6
   debug:
@@ -96,3 +86,13 @@
   debug:
     msg: "WARNING: Configured shorewall6_interfaces include unknown interfaces {{ shorewall6_invalid_interfaces }} (excluding allowed transient pattern {{ shorewall6_allowed_missing_interface_regex }}). Detected interfaces: {{ shorewall_detected_interfaces }}. Restart was skipped for safety."
   when: (shorewall6_run|bool) and (shorewall6_invalid_interfaces | length > 0)
+
+- name: Shorewall dead man's switch
+  debug:
+    msg: "Skipped Shorewall configuration because dead man's switch var 'shorewall_run' is not set to true"
+  when: not shorewall_run|bool
+
+- name: Shorewall6 dead man's switch
+  debug:
+    msg: "Skipped Shorewall6 configuration because dead man's switch var 'shorewall6_run' is not set to true"
+  when: not shorewall6_run|bool
